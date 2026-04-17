@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C3 AI FOIA Management — Wireframes</title>
+<style>
+  :root {
+    --sidebar-bg: #1a2535;
+    --sidebar-w: 72px;
+    --filter-w: 220px;
+    --green: #3aab7b;
+    --green-light: #e8f7f1;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --red: #ef4444;
+    --orange: #f59e0b;
+    --navy: #1a2535;
+    --text: #111827;
+    --text-2: #6b7280;
+    --text-3: #9ca3af;
+    --border: #e5e7eb;
+    --bg: #f8f9fa;
+    --white: #ffffff;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 4px; flex-shrink: 0; z-index: 10; }
+  .sidebar-logo { width: 40px; height: 40px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .sidebar-logo svg { width: 22px; height: 22px; fill: white; }
+  .nav-item { width: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 8px; cursor: pointer; color: #8899aa; transition: all .15s; }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #cdd5e0; }
+  .nav-item.active { background: rgba(58,171,123,0.15); color: var(--green); }
+  .nav-item svg { width: 20px; height: 20px; }
+  .nav-item span { font-size: 9.5px; font-weight: 500; text-align: center; line-height: 1.2; }
+  .nav-spacer { flex: 1; }
+
+  /* ── MAIN SHELL ── */
+  .shell { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 48px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 0; flex-shrink: 0; }
+  .app-title { font-size: 15px; font-weight: 600; color: var(--text); margin-right: 32px; }
+  .tab { padding: 0 16px; height: 48px; display: flex; align-items: center; font-size: 13px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .tab:hover:not(.active) { color: var(--text); }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .select-pill { border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 12px; background: white; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .select-pill svg { width: 14px; height: 14px; color: var(--text-2); }
+
+  /* ── CONTENT AREA ── */
+  .content-area { flex: 1; display: flex; overflow: hidden; }
+
+  /* ── FILTER PANEL ── */
+  .filter-panel { width: var(--filter-w); background: var(--white); border-right: 1px solid var(--border); padding: 16px 14px; overflow-y: auto; flex-shrink: 0; }
+  .filter-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .filter-panel-header span { font-size: 14px; font-weight: 600; }
+  .filter-section { margin-bottom: 16px; }
+  .filter-section-label { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .filter-section-label a { font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; text-transform: none; letter-spacing: 0; }
+  .filter-label { font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 4px; margin-top: 8px; }
+  .filter-select { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; background: white; color: var(--text); display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .filter-select svg { width: 12px; height: 12px; color: var(--text-3); }
+  .filter-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .btn-primary { background: var(--blue); color: white; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .btn-ghost { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; font-size: 12px; color: var(--text-2); cursor: pointer; }
+  .btn-green { background: var(--green); color: white; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .btn-red { background: var(--red); color: white; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; overflow-y: auto; padding: 20px; }
+
+  /* ── KPI CARDS ── */
+  .kpi-row { display: flex; gap: 12px; margin-bottom: 20px; overflow-x: auto; }
+  .kpi-card { flex: 1; min-width: 140px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: var(--card-shadow); }
+  .kpi-label { font-size: 10px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .kpi-value-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 700; color: var(--text); }
+  .kpi-badge { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .kpi-badge.ok { background: #dcfce7; }
+  .kpi-badge.ok svg { width: 10px; height: 10px; fill: #16a34a; }
+  .kpi-badge.warn { background: #fef9c3; }
+  .kpi-badge.warn svg { width: 10px; height: 10px; fill: #ca8a04; }
+  .kpi-badge.bad { background: #fee2e2; }
+  .kpi-badge.bad svg { width: 10px; height: 10px; fill: #dc2626; }
+  .kpi-date { font-size: 10px; color: var(--text-3); }
+
+  /* ── CHART CARDS ── */
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .chart-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; box-shadow: var(--card-shadow); }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .chart-subtitle { font-size: 11px; color: var(--text-2); margin-bottom: 14px; }
+  .chart-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .chart-select { border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 11px; background: white; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .chart-select .x-btn { color: var(--text-3); font-size: 10px; cursor: pointer; }
+  .legend { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-line { width: 16px; height: 2px; }
+
+  /* ── TABLE ── */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); overflow: hidden; }
+  .table-header { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .table-title { font-size: 13px; font-weight: 600; }
+  .table-actions { display: flex; gap: 8px; align-items: center; }
+  .search-input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 12px; width: 200px; outline: none; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f9fafb; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; }
+  tbody tr:hover { background: #f9fafb; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 10px 14px; font-size: 12px; color: var(--text); white-space: nowrap; }
+
+  /* ── BADGES ── */
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-orange { background: #fef3c7; color: #b45309; }
+  .badge-red { background: #fee2e2; color: #b91c1c; }
+  .badge-gray { background: #f3f4f6; color: #4b5563; }
+  .badge-purple { background: #ede9fe; color: #6d28d9; }
+
+  /* ── DAYS PILL ── */
+  .days-ok { color: #15803d; font-weight: 600; }
+  .days-warn { color: #b45309; font-weight: 600; }
+  .days-bad { color: #b91c1c; font-weight: 600; }
+
+  /* ── SCREEN VISIBILITY ── */
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+
+  /* ── CASE DETAIL TABS ── */
+  .detail-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .detail-tab { padding: 8px 16px; font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; }
+  .detail-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ── FORM GRID ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+  .form-value { font-size: 13px; color: var(--text); padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: #fafafa; }
+  .form-value.editable { background: white; }
+  .form-textarea { font-size: 12px; color: var(--text); padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: white; min-height: 80px; resize: vertical; width: 100%; }
+
+  /* ── AI CARD ── */
+  .ai-card { background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+  .ai-card-title { font-size: 11px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .score-bar-wrap { background: #e5e7eb; border-radius: 99px; height: 8px; margin: 6px 0; overflow: hidden; }
+  .score-bar { height: 8px; border-radius: 99px; background: var(--green); }
+
+  /* ── CLOCK BANNER ── */
+  .clock-banner { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .clock-banner-text { font-size: 12px; font-weight: 600; color: #92400e; display: flex; align-items: center; gap: 8px; }
+
+  /* ── SEARCH SCREEN ── */
+  .search-hero { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 16px; box-shadow: var(--card-shadow); }
+  .search-bar { display: flex; gap: 10px; align-items: center; }
+  .search-input-lg { flex: 1; border: 2px solid var(--blue); border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; }
+  .search-btn { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .search-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .search-tag { background: var(--blue-light); color: var(--blue); border-radius: 12px; padding: 3px 10px; font-size: 11px; font-weight: 500; cursor: pointer; }
+  .result-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 10px; box-shadow: var(--card-shadow); cursor: pointer; }
+  .result-card:hover { border-color: var(--blue); }
+  .result-title { font-size: 13px; font-weight: 600; color: var(--blue); margin-bottom: 4px; }
+  .result-meta { font-size: 11px; color: var(--text-2); margin-bottom: 6px; }
+  .result-snippet { font-size: 12px; color: var(--text); line-height: 1.5; }
+  .result-snippet mark { background: #fef9c3; padding: 0 2px; }
+
+  /* ── DOC ITEM ── */
+  .doc-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .doc-row:last-child { border-bottom: none; }
+  .doc-icon { width: 32px; height: 32px; border-radius: 6px; background: #dbeafe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .doc-icon svg { width: 16px; height: 16px; fill: var(--blue); }
+  .doc-info { flex: 1; }
+  .doc-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .doc-meta { font-size: 11px; color: var(--text-2); }
+
+  /* ── AUDIT LOG ── */
+  .log-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+  .log-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-top: 4px; flex-shrink: 0; }
+  .log-text { font-size: 12px; color: var(--text); }
+  .log-time { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+  /* ── ANALYTICS SPECIFIC ── */
+  .stat-row { display: flex; gap: 12px; margin-bottom: 4px; align-items: center; }
+  .stat-bar-label { font-size: 11px; color: var(--text-2); width: 90px; text-align: right; flex-shrink: 0; }
+  .stat-bar-track { flex: 1; background: #f3f4f6; border-radius: 3px; height: 18px; overflow: hidden; position: relative; }
+  .stat-bar-fill { height: 100%; border-radius: 3px; background: var(--green); display: flex; align-items: center; padding-left: 6px; }
+  .stat-bar-fill.red { background: #fca5a5; }
+  .stat-bar-val { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 600; color: var(--text); }
+  .threshold-line { position: absolute; width: 2px; background: #6366f1; top: 0; bottom: 0; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════ SIDEBAR ════════════════════════════════ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+
+  <div class="nav-item active" onclick="showScreen('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span>Dashboard</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('workload')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    <span>Workload</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('casedetail')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span>Cases</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('search')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span>Search</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('analytics')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span>Analytics</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('ai')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>
+    <span>AI Hub</span>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-item" onclick="showScreen('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12h2M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41"/></svg>
+    <span>Admin</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: DASHBOARD ════════════════════════════ -->
+<div class="screen active" id="screen-dashboard">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">Overview</div>
+      <div class="tab" onclick="showScreen('analytics')">Analytics</div>
+      <div class="topbar-right">
+        <div class="select-pill">FY 2026 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="select-pill">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+    </div>
+    <div class="content-area">
+      <!-- Filter Panel -->
+      <div class="filter-panel">
+        <div class="filter-panel-header"><span>Filter</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <div class="filter-section">
+          <div class="filter-section-label">Component <a href="#">Clear</a></div>
+          <div class="filter-label">Agency</div>
+          <div class="filter-select">Select <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="filter-label">Mission Area</div>
+          <div class="filter-select">Select <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Date Range <a href="#">Clear</a></div>
+          <div class="filter-label">From</div>
+          <div class="filter-select">Oct 1, 2025 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="filter-label">To</div>
+          <div class="filter-select">Today <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Track Type</div>
+          <div class="filter-select">All Tracks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-primary">Filter</button>
+          <button class="btn-ghost">Clear all</button>
+        </div>
+      </div>
+
+      <!-- Main Dashboard -->
+      <div class="main">
+        <!-- KPI Row -->
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">Requests Received</div>
+            <div class="kpi-value-row"><span class="kpi-value">8,241</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div>
+            <div class="kpi-date">Oct 1 — Today</div>
+            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,25 15,22 30,20 45,18 60,15 75,17 90,13 105,10 120,12" fill="none" stroke="#f59e0b" stroke-width="1.5"/><path d="M0,25 15,22 30,20 45,18 60,15 75,17 90,13 105,10 120,12 120,30 0,30Z" fill="rgba(245,158,11,0.08)"/></svg>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Closed / Processed</div>
+            <div class="kpi-value-row"><span class="kpi-value">7,108</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+            <div class="kpi-date">86.3% close rate</div>
+            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,28 15,25 30,22 45,20 60,17 75,15 90,12 105,10 120,9" fill="none" stroke="#3aab7b" stroke-width="1.5"/><path d="M0,28 15,25 30,22 45,20 60,17 75,15 90,12 105,10 120,9 120,30 0,30Z" fill="rgba(58,171,123,0.08)"/></svg>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Active Backlog</div>
+            <div class="kpi-value-row"><span class="kpi-value">1,133</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div>
+            <div class="kpi-date">Target: &lt;500</div>
+            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,10 15,12 30,14 45,13 60,16 75,15 90,18 105,17 120,19" fill="none" stroke="#f59e0b" stroke-width="1.5"/><path d="M0,10 15,12 30,14 45,13 60,16 75,15 90,18 105,17 120,19 120,30 0,30Z" fill="rgba(245,158,11,0.08)"/></svg>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Overdue Requests</div>
+            <div class="kpi-value-row"><span class="kpi-value">247</span><span class="kpi-badge bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div>
+            <div class="kpi-date">Past 21-day deadline</div>
+            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,22 15,20 30,18 45,20 60,16 75,18 90,14 105,16 120,13" fill="none" stroke="#ef4444" stroke-width="1.5"/><path d="M0,22 15,20 30,18 45,20 60,16 75,18 90,14 105,16 120,13 120,30 0,30Z" fill="rgba(239,68,68,0.08)"/></svg>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Avg. Processing Days</div>
+            <div class="kpi-value-row"><span class="kpi-value">17.4</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+            <div class="kpi-date">Simple track</div>
+            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,20 15,18 30,16 45,15 60,13 75,14 90,12 105,11 120,10" fill="none" stroke="#3aab7b" stroke-width="1.5"/><path d="M0,20 15,18 30,16 45,15 60,13 75,14 90,12 105,11 120,10 120,30 0,30Z" fill="rgba(58,171,123,0.08)"/></svg>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Duplicates Flagged</div>
+            <div class="kpi-value-row"><span class="kpi-value">312</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+            <div class="kpi-date">AI auto-detected</div>
+            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,28 15,26 30,22 45,19 60,15 75,12 90,10 105,8 120,7" fill="none" stroke="#3aab7b" stroke-width="1.5"/><path d="M0,28 15,26 30,22 45,19 60,15 75,12 90,10 105,8 120,7 120,30 0,30Z" fill="rgba(58,171,123,0.08)"/></svg>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-title">Request Volume by Component</div>
+            <div class="chart-subtitle">FY2026 YTD — received vs. closed</div>
+            <svg width="100%" height="180" viewBox="0 0 360 180">
+              <!-- bars -->
+              <g transform="translate(70,10)">
+                <!-- FSA -->
+                <rect x="0" y="20" width="185" height="14" fill="#3aab7b" rx="2"/>
+                <rect x="0" y="20" width="162" height="14" fill="none" stroke="#3aab7b" stroke-width="1" rx="2"/>
+                <text x="-8" y="30" text-anchor="end" font-size="10" fill="#6b7280">FSA</text>
+                <text x="190" y="30" font-size="10" fill="#374151" font-weight="600">5,574</text>
+                <!-- APHIS -->
+                <rect x="0" y="44" width="62" height="14" fill="#3aab7b" rx="2"/>
+                <text x="-8" y="54" text-anchor="end" font-size="10" fill="#6b7280">APHIS</text>
+                <text x="67" y="54" font-size="10" fill="#374151" font-weight="600">601</text>
+                <!-- FNS -->
+                <rect x="0" y="68" width="50" height="14" fill="#3aab7b" rx="2"/>
+                <text x="-8" y="78" text-anchor="end" font-size="10" fill="#6b7280">FNS</text>
+                <text x="55" y="78" font-size="10" fill="#374151" font-weight="600">480</text>
+                <!-- NRCS -->
+                <rect x="0" y="92" width="28" height="14" fill="#3aab7b" rx="2"/>
+                <text x="-8" y="102" text-anchor="end" font-size="10" fill="#6b7280">NRCS</text>
+                <text x="33" y="102" font-size="10" fill="#374151" font-weight="600">261</text>
+                <!-- AMS -->
+                <rect x="0" y="116" width="18" height="14" fill="#3aab7b" rx="2"/>
+                <text x="-8" y="126" text-anchor="end" font-size="10" fill="#6b7280">AMS</text>
+                <text x="23" y="126" font-size="10" fill="#374151" font-weight="600">143</text>
+                <!-- Other -->
+                <rect x="0" y="140" width="35" height="14" fill="#93c5fd" rx="2"/>
+                <text x="-8" y="152" text-anchor="end" font-size="10" fill="#6b7280">Other</text>
+                <text x="40" y="152" font-size="10" fill="#374151" font-weight="600">289</text>
+                <!-- axis line -->
+                <line x1="0" y1="0" x2="0" y2="165" stroke="#e5e7eb" stroke-width="1"/>
+              </g>
+            </svg>
+            <div class="legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#3aab7b"></div>Received</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>Closed</div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Status Distribution</div>
+            <div class="chart-subtitle">All active requests — current snapshot</div>
+            <svg width="100%" height="180" viewBox="0 0 300 180">
+              <g transform="translate(100,90)">
+                <!-- donut segments -->
+                <circle cx="0" cy="0" r="60" fill="none" stroke="#e5e7eb" stroke-width="28"/>
+                <circle cx="0" cy="0" r="60" fill="none" stroke="#3aab7b" stroke-width="28" stroke-dasharray="170 208" stroke-dashoffset="0" transform="rotate(-90)"/>
+                <circle cx="0" cy="0" r="60" fill="none" stroke="#93c5fd" stroke-width="28" stroke-dasharray="70 208" stroke-dashoffset="-170" transform="rotate(-90)"/>
+                <circle cx="0" cy="0" r="60" fill="none" stroke="#fcd34d" stroke-width="28" stroke-dasharray="45 208" stroke-dashoffset="-240" transform="rotate(-90)"/>
+                <circle cx="0" cy="0" r="60" fill="none" stroke="#fca5a5" stroke-width="28" stroke-dasharray="28 208" stroke-dashoffset="-285" transform="rotate(-90)"/>
+                <text x="0" y="-6" text-anchor="middle" font-size="18" font-weight="700" fill="#111827">1,133</text>
+                <text x="0" y="10" text-anchor="middle" font-size="10" fill="#6b7280">Active</text>
+              </g>
+              <!-- Legend -->
+              <g transform="translate(175,30)">
+                <rect x="0" y="0" width="10" height="10" fill="#3aab7b" rx="2"/>
+                <text x="14" y="9" font-size="10" fill="#374151">In Review (54%)</text>
+                <rect x="0" y="20" width="10" height="10" fill="#93c5fd" rx="2"/>
+                <text x="14" y="29" font-size="10" fill="#374151">Perfection (22%)</text>
+                <rect x="0" y="40" width="10" height="10" fill="#fcd34d" rx="2"/>
+                <text x="14" y="49" font-size="10" fill="#374151">Awaiting Docs (14%)</text>
+                <rect x="0" y="60" width="10" height="10" fill="#fca5a5" rx="2"/>
+                <text x="14" y="69" font-size="10" fill="#374151">Overdue (9%)</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="table-card">
+          <div class="table-header">
+            <span class="table-title">Recent Activity</span>
+            <div class="table-actions">
+              <input class="search-input" type="text" placeholder="Search cases...">
+              <button class="btn-primary" onclick="showScreen('workload')">View All</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Case #</th><th>Requester</th><th>Component</th><th>Received</th><th>Due Date</th><th>Days Left</th><th>Track</th><th>Status</th><th>AI Score</th>
+            </tr></thead>
+            <tbody>
+              <tr onclick="showScreen('casedetail')"><td><b>FSA-2026-04821</b></td><td>A. Chen / Reuters</td><td>FSA</td><td>Apr 10</td><td>May 8</td><td class="days-ok">+14</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-green">In Review</span></td><td>72</td></tr>
+              <tr onclick="showScreen('casedetail')"><td><b>APHIS-2026-01103</b></td><td>EWG / Advocacy</td><td>APHIS</td><td>Apr 8</td><td>May 6</td><td class="days-warn">+12</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-orange">Perfection</span></td><td>88</td></tr>
+              <tr onclick="showScreen('casedetail')"><td><b>FSA-2026-04819</b></td><td>J. Williams / FOIA.gov</td><td>FSA</td><td>Apr 7</td><td>May 5</td><td class="days-warn">+11</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-blue">Awaiting Docs</span></td><td>45</td></tr>
+              <tr onclick="showScreen('casedetail')"><td><b>FNS-2026-00892</b></td><td>Center on Budget / Policy</td><td>FNS</td><td>Apr 5</td><td>May 1</td><td class="days-bad">+7</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-red">Overdue</span></td><td>91</td></tr>
+              <tr onclick="showScreen('casedetail')"><td><b>NRCS-2026-00441</b></td><td>B. Martinez / Individual</td><td>NRCS</td><td>Apr 3</td><td>Apr 29</td><td class="days-bad">+3</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-orange">In Review</span></td><td>38</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: WORKLOAD ════════════════════════════ -->
+<div class="screen" id="screen-workload">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">Workload Queue</div>
+      <div class="topbar-right">
+        <div class="select-pill">My Cases <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <button class="btn-primary">+ New Request</button>
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="filter-panel">
+        <div class="filter-panel-header"><span>Filter</span></div>
+        <div class="filter-section">
+          <div class="filter-section-label">Component <a href="#">Clear</a></div>
+          <div class="filter-select">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Status</div>
+          <div class="filter-select">All Statuses <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Track Type</div>
+          <div class="filter-select">All Tracks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Assigned To</div>
+          <div class="filter-select">Anyone <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Priority</div>
+          <div class="filter-select">All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-primary">Apply</button>
+          <button class="btn-ghost">Clear all</button>
+        </div>
+      </div>
+      <div class="main" style="padding:16px;">
+        <div class="table-card">
+          <div class="table-header">
+            <span class="table-title">Active Cases — 1,133 total</span>
+            <div class="table-actions">
+              <input class="search-input" type="text" placeholder="Search case #, requester...">
+              <div class="select-pill">Sort: Due Date ↑ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Case #</th><th>Requester / Org</th><th>Component</th><th>Description</th><th>Received</th><th>Due Date</th><th>Days</th><th>Track</th><th>Status</th><th>AI Score</th><th>Assigned</th>
+            </tr></thead>
+            <tbody>
+              <tr onclick="showScreen('casedetail')"><td><b style="color:#2563eb">FNS-2026-00892</b></td><td>Center on Budget</td><td>FNS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">SNAP waivers issued during COVID...</td><td>Apr 5</td><td>May 1</td><td class="days-bad">OVERDUE</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-red">Overdue</span></td><td><b style="color:#dc2626">91</b></td><td>K. Johnson</td></tr>
+              <tr onclick="showScreen('casedetail')"><td><b style="color:#2563eb">APHIS-2026-01103</b></td><td>EWG</td><td>APHIS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Pesticide residue inspection reports...</td><td>Apr 8</td><td>May 6</td><td class="days-warn">+12</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-orange">Perfection</span></td><td><b style="color:#b45309">88</b></td><td>M. Torres</td></tr>
+              <tr onclick="showScreen('casedetail')"><td><b style="color:#2563eb">FSA-2026-04821</b></td><td>A. Chen / Reuters</td><td>FSA</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Farm loan payment records FY2024...</td><td>Apr 10</td><td>May 8</td><td class="days-ok">+14</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-green">In Review</span></td><td>72</td><td>D. Patel</td></tr>
+              <tr><td><b style="color:#2563eb">NRCS-2026-00441</b></td><td>B. Martinez</td><td>NRCS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Conservation easement contracts...</td><td>Apr 3</td><td>Apr 29</td><td class="days-bad">+3</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-orange">In Review</span></td><td>38</td><td>S. Kim</td></tr>
+              <tr><td><b style="color:#2563eb">FSA-2026-04819</b></td><td>J. Williams</td><td>FSA</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Crop insurance payout data...</td><td>Apr 7</td><td>May 5</td><td class="days-warn">+11</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-blue">Awaiting Docs</span></td><td>45</td><td>D. Patel</td></tr>
+              <tr><td><b style="color:#2563eb">AMS-2026-00301</b></td><td>Food & Water Watch</td><td>AMS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Meat grading audit reports Q3...</td><td>Apr 11</td><td>May 9</td><td class="days-ok">+15</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-green">In Review</span></td><td>79</td><td>Unassigned</td></tr>
+              <tr><td><b style="color:#2563eb">FSA-2026-04815</b></td><td>R. Thompson / Individual</td><td>FSA</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">FSN parcel data for county...</td><td>Apr 1</td><td>Apr 27</td><td class="days-bad">+1</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-red">Overdue</span></td><td>61</td><td>K. Johnson</td></tr>
+              <tr><td><b style="color:#2563eb">APHIS-2026-01099</b></td><td>NYT / Media</td><td>APHIS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">H5N1 avian flu inspection logs...</td><td>Apr 9</td><td>May 7</td><td class="days-ok">+13</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-purple">AI Flagged</span></td><td><b style="color:#dc2626">94</b></td><td>M. Torres</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: CASE DETAIL ════════════════════════════ -->
+<div class="screen" id="screen-casedetail">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">Case Detail</div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:#6b7280;margin-right:8px">← <a href="#" onclick="showScreen('workload');return false;" style="color:#2563eb">Back to Workload</a></span>
+        <button class="btn-red" style="margin-right:6px">Stop the Clock</button>
+        <button class="btn-ghost" style="margin-right:6px">Transfer</button>
+        <button class="btn-green">Close Case</button>
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="main" style="padding:16px;max-width:100%">
+
+        <!-- AI & Clock banners -->
+        <div class="clock-banner">
+          <span class="clock-banner-text">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            21-Day Clock Running — Due: May 6, 2026 &nbsp;|&nbsp; <b>12 business days remaining</b>
+          </span>
+          <span style="font-size:11px;color:#92400e">Started Apr 8, 2026</span>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>
+            AI Analysis
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px">
+            <div><div style="color:#6b7280;margin-bottom:3px">Complexity Score</div><div style="font-size:20px;font-weight:700;color:#1d4ed8">88 <span style="font-size:11px;color:#6b7280">/ 100</span></div><div class="score-bar-wrap"><div class="score-bar" style="width:88%"></div></div><div style="color:#b45309;font-weight:600">HIGH — Complex Track</div></div>
+            <div><div style="color:#6b7280;margin-bottom:3px">Routing Suggestion</div><div style="font-weight:600;color:#374151;margin-top:4px">APHIS — PPQ Division</div><div style="color:#6b7280;margin-top:2px">Confidence: 94%</div><div style="color:#3aab7b;margin-top:2px">✓ Accepted by officer</div></div>
+            <div><div style="color:#6b7280;margin-bottom:3px">Duplicate Detection</div><div style="font-weight:600;color:#374151;margin-top:4px">1 Similar Case Found</div><div style="color:#6b7280;margin-top:2px">APHIS-2026-01041</div><div style="color:#2563eb;margin-top:2px;cursor:pointer">Review →</div></div>
+          </div>
+        </div>
+
+        <!-- Case form -->
+        <div class="chart-card" style="margin-bottom:14px">
+          <div class="detail-tabs">
+            <div class="detail-tab active">Summary</div>
+            <div class="detail-tab" onclick="showScreen('documents')">Documents (4)</div>
+            <div class="detail-tab">Audit Log</div>
+            <div class="detail-tab">Assignments</div>
+            <div class="detail-tab">Communications</div>
+            <div class="detail-tab">Appeal</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Case Number</div><div class="form-value">APHIS-2026-01103</div></div>
+            <div class="form-group"><div class="form-label">Status</div><div class="form-value"><span class="badge badge-orange">Perfection Required</span></div></div>
+            <div class="form-group"><div class="form-label">Requester Name</div><div class="form-value">Environmental Working Group (EWG)</div></div>
+            <div class="form-group"><div class="form-label">Requester Type</div><div class="form-value">Non-profit / Advocacy</div></div>
+            <div class="form-group"><div class="form-label">Email</div><div class="form-value">foia@ewg.org</div></div>
+            <div class="form-group"><div class="form-label">Component</div><div class="form-value">APHIS — Plant Protection & Quarantine</div></div>
+            <div class="form-group"><div class="form-label">Received Date</div><div class="form-value">April 8, 2026</div></div>
+            <div class="form-group"><div class="form-label">Due Date</div><div class="form-value">May 6, 2026</div></div>
+            <div class="form-group"><div class="form-label">Track Type</div><div class="form-value"><span class="badge badge-orange">Complex</span></div></div>
+            <div class="form-group"><div class="form-label">Fee Category</div><div class="form-value">News Media / Fee Waiver Requested</div></div>
+            <div class="form-group full"><div class="form-label">Request Description</div><div class="form-value" style="white-space:normal;line-height:1.5">All records related to pesticide residue inspection reports for imported produce, including internal APHIS memos, inspection logs, and enforcement actions, from January 1, 2024 through March 31, 2026.</div></div>
+            <div class="form-group"><div class="form-label">Assigned Officer</div><div class="form-value editable">M. Torres — APHIS FOIA Office</div></div>
+            <div class="form-group"><div class="form-label">Perfection Note</div><div class="form-value editable" style="color:#b45309">Awaiting clarification on geographic scope — sent Apr 12</div></div>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <div class="form-label" style="margin-bottom:8px">Exemptions Applied</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge badge-purple">b(4) Commercial/Trade Secrets</span>
+              <span class="badge badge-gray">b(6) Personal Privacy — Under Review</span>
+              <button class="btn-ghost" style="font-size:11px;padding:3px 10px">+ Add Exemption</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit log preview -->
+        <div class="chart-card">
+          <div class="chart-title" style="margin-bottom:10px">Recent Activity</div>
+          <div class="log-item"><div class="log-dot" style="background:#3aab7b"></div><div><div class="log-text">Perfection notice sent to requester — scope clarification requested</div><div class="log-time">Apr 12, 2026 at 2:41 PM — M. Torres</div></div></div>
+          <div class="log-item"><div class="log-dot" style="background:#93c5fd"></div><div><div class="log-text">AI complexity score generated: 88 — Complex track recommended</div><div class="log-time">Apr 8, 2026 at 9:03 AM — System (AI Engine v2.1)</div></div></div>
+          <div class="log-item"><div class="log-dot" style="background:#3aab7b"></div><div><div class="log-text">Case created — intake via USDA ePortal submission #EP-44921</div><div class="log-time">Apr 8, 2026 at 8:47 AM — System (Intake)</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: DOCUMENTS ════════════════════════════ -->
+<div class="screen" id="screen-documents">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab">Case APHIS-2026-01103</div>
+      <div class="tab active">Documents</div>
+      <div class="topbar-right">
+        <button class="btn-ghost" onclick="showScreen('casedetail')">← Back to Case</button>
+        <button class="btn-primary" style="margin-left:8px">+ Upload Document</button>
+        <button class="btn-green" style="margin-left:6px">Run AI Redaction Pass</button>
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="filter-panel">
+        <div class="filter-panel-header"><span>Filter</span></div>
+        <div class="filter-section">
+          <div class="filter-section-label">Redaction Status</div>
+          <div class="filter-select">All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">File Type</div>
+          <div class="filter-select">All Types <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Exemption</div>
+          <div class="filter-select">All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-actions"><button class="btn-primary">Apply</button><button class="btn-ghost">Clear</button></div>
+      </div>
+      <div class="main" style="padding:16px">
+        <!-- AI Redaction Banner -->
+        <div class="ai-card" style="margin-bottom:14px">
+          <div class="ai-card-title">AI Redaction Analysis Complete</div>
+          <div style="font-size:12px;color:#374151;line-height:1.6">
+            Reviewed <b>4 documents (312 pages)</b> — identified <b>47 PII instances</b> and <b>23 potential b(4) passages</b> for human review.
+            <span style="color:#2563eb;cursor:pointer;margin-left:8px">Review AI Suggestions →</span>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><span class="table-title">Attached Documents (4)</span></div>
+          <div>
+            <div class="doc-row">
+              <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="doc-info"><div class="doc-name">APHIS_PPQ_Pesticide_Inspection_FY2024.pdf</div><div class="doc-meta">148 pages · Uploaded Apr 10, 2026 · M. Torres</div></div>
+              <span class="badge badge-red">AI Review Needed — 31 flags</span>
+              <button class="btn-ghost" style="margin-left:12px;font-size:11px">Review</button>
+            </div>
+            <div class="doc-row">
+              <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="doc-info"><div class="doc-name">Internal_Memos_ImportProduce_Q1Q2_2025.pdf</div><div class="doc-meta">94 pages · Uploaded Apr 10, 2026 · M. Torres</div></div>
+              <span class="badge badge-orange">In Review — 18 flags</span>
+              <button class="btn-ghost" style="margin-left:12px;font-size:11px">Review</button>
+            </div>
+            <div class="doc-row">
+              <div class="doc-icon" style="background:#dcfce7"><svg viewBox="0 0 24 24" style="fill:#15803d"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="doc-info"><div class="doc-name">Enforcement_Actions_FY2024_FY2025.pdf</div><div class="doc-meta">52 pages · Uploaded Apr 11, 2026 · M. Torres</div></div>
+              <span class="badge badge-green">Redaction Complete</span>
+              <button class="btn-ghost" style="margin-left:12px;font-size:11px">Download</button>
+            </div>
+            <div class="doc-row">
+              <div class="doc-icon" style="background:#ede9fe"><svg viewBox="0 0 24 24" style="fill:#6d28d9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="doc-info"><div class="doc-name">Search_Memo_APHIS_PPQ_Apr12.docx</div><div class="doc-meta">3 pages · AI-generated draft · Approved Apr 12, 2026</div></div>
+              <span class="badge badge-purple">Search Memo</span>
+              <button class="btn-ghost" style="margin-left:12px;font-size:11px">View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: ANALYTICS ════════════════════════════ -->
+<div class="screen" id="screen-analytics">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">Analytics</div>
+      <div class="tab">Benchmarking</div>
+      <div class="tab">Annual Report</div>
+      <div class="topbar-right">
+        <div class="select-pill">FY2024–FY2026 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <div class="select-pill">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="filter-panel">
+        <div class="filter-panel-header"><span>Filter</span></div>
+        <div class="filter-section">
+          <div class="filter-section-label">Component <a href="#">Clear</a></div>
+          <div class="filter-select">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Fiscal Year</div>
+          <div class="filter-select">FY2022 – FY2026 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Track</div>
+          <div class="filter-select">All Tracks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-actions"><button class="btn-primary">Filter</button><button class="btn-ghost">Clear all</button></div>
+      </div>
+      <div class="main">
+        <!-- KPI row -->
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Total Received FY2024</div><div class="kpi-value-row"><span class="kpi-value">24,722</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div><div class="kpi-date">+49% vs FY2022</div></div>
+          <div class="kpi-card"><div class="kpi-label">Close Rate FY2024</div><div class="kpi-value-row"><span class="kpi-value">85.4%</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div><div class="kpi-date">Target ≥95%</div></div>
+          <div class="kpi-card"><div class="kpi-label">End-of-FY Backlog</div><div class="kpi-value-row"><span class="kpi-value">2,270</span><span class="kpi-badge bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="kpi-date">Target &lt;500</div></div>
+          <div class="kpi-card"><div class="kpi-label">Simple Median Days</div><div class="kpi-value-row"><span class="kpi-value">17.4</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div><div class="kpi-date">HHS benchmark: 10</div></div>
+          <div class="kpi-card"><div class="kpi-label">Duplicates FY2024</div><div class="kpi-value-row"><span class="kpi-value">1,189</span><span class="kpi-badge bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="kpi-date">Before AI detection</div></div>
+        </div>
+
+        <div class="chart-row">
+          <!-- Backlog Trend -->
+          <div class="chart-card">
+            <div class="chart-title">Backlog Trend (FY2022–FY2026 YTD)</div>
+            <div class="chart-subtitle">End-of-year pending requests — with AI forecast</div>
+            <svg width="100%" height="170" viewBox="0 0 320 170">
+              <g transform="translate(30,10)">
+                <!-- grid -->
+                <line x1="0" y1="0" x2="280" y2="0" stroke="#f3f4f6" stroke-width="1"/>
+                <line x1="0" y1="40" x2="280" y2="40" stroke="#f3f4f6" stroke-width="1"/>
+                <line x1="0" y1="80" x2="280" y2="80" stroke="#f3f4f6" stroke-width="1"/>
+                <line x1="0" y1="120" x2="280" y2="120" stroke="#f3f4f6" stroke-width="1"/>
+                <!-- y-axis labels -->
+                <text x="-4" y="4" text-anchor="end" font-size="9" fill="#9ca3af">3000</text>
+                <text x="-4" y="44" text-anchor="end" font-size="9" fill="#9ca3af">2250</text>
+                <text x="-4" y="84" text-anchor="end" font-size="9" fill="#9ca3af">1500</text>
+                <text x="-4" y="124" text-anchor="end" font-size="9" fill="#9ca3af">750</text>
+                <!-- actual line -->
+                <polyline points="0,110 70,95 140,80 210,45 280,55" fill="none" stroke="#3aab7b" stroke-width="2.5" stroke-linejoin="round"/>
+                <!-- forecast (dashed) -->
+                <polyline points="280,55 310,38 340,22" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="5,3"/>
+                <!-- target line -->
+                <line x1="0" y1="113" x2="340" y2="113" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="342" y="117" font-size="9" fill="#6366f1">Target 500</text>
+                <!-- dots -->
+                <circle cx="0" cy="110" r="4" fill="#3aab7b"/>
+                <circle cx="70" cy="95" r="4" fill="#3aab7b"/>
+                <circle cx="140" cy="80" r="4" fill="#3aab7b"/>
+                <circle cx="210" cy="45" r="4" fill="#3aab7b"/>
+                <circle cx="280" cy="55" r="4" fill="#3aab7b"/>
+                <!-- x-axis labels -->
+                <text x="0" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY22</text>
+                <text x="70" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY23</text>
+                <text x="140" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY24</text>
+                <text x="210" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY25</text>
+                <text x="280" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY26 YTD</text>
+              </g>
+            </svg>
+            <div class="legend">
+              <div class="legend-item"><div class="legend-line" style="background:#3aab7b"></div>Actual Backlog</div>
+              <div class="legend-item"><div class="legend-line" style="background:#93c5fd;border-top:2px dashed #93c5fd;height:0"></div>AI Forecast</div>
+              <div class="legend-item"><div class="legend-line" style="background:#6366f1"></div>Target</div>
+            </div>
+          </div>
+
+          <!-- Benchmark -->
+          <div class="chart-card">
+            <div class="chart-title">Processing Time — USDA vs. Peers (Simple Track)</div>
+            <div class="chart-subtitle">Median business days — FY2024</div>
+            <div style="margin-top:12px">
+              <div class="stat-row"><div class="stat-bar-label">HHS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:37%;background:#3aab7b;"><span style="font-size:9px;color:white">10d</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">DOT</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:44%;background:#93c5fd;"><span style="font-size:9px;color:#374151">12d</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">DOD</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:55%;background:#93c5fd;"><span style="font-size:9px;color:#374151">15d</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label" style="font-weight:700;color:#1a2535">USDA</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:64%;background:#fca5a5;"><span style="font-size:9px;color:#374151">17.4d</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">USDA Target</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:37%;background:#c7d2fe;"><span style="font-size:9px;color:#374151">10d</span></div><div class="threshold-line" style="left:37%"></div></div></div>
+            </div>
+            <div class="legend" style="margin-top:10px">
+              <div class="legend-item"><div class="legend-dot" style="background:#3aab7b"></div>At/Below Target</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>Above Target</div>
+              <div class="legend-item"><div class="legend-line" style="background:#6366f1"></div>USDA Target (10d)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exemption Usage -->
+        <div class="chart-card full">
+          <div class="chart-title">Exemption Usage by Component — FY2024</div>
+          <div class="chart-subtitle">Count of exemption applications per FOIA exemption category</div>
+          <div style="overflow-x:auto">
+            <table style="min-width:600px">
+              <thead><tr style="background:#f9fafb">
+                <th style="padding:8px 12px;font-size:10px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:left">Component</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(1)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(2)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(3)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(4)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(5)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(6)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(7)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(8)</th>
+                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(9)</th>
+              </tr></thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 12px;font-size:11px;font-weight:600">FSA</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">12</td><td style="text-align:center;font-size:11px">89</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>2,341</b></td><td style="text-align:center;font-size:11px">445</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>1,892</b></td><td style="text-align:center;font-size:11px">34</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">7</td></tr>
+                <tr style="border-bottom:1px solid #f3f4f6;background:#f9fafb"><td style="padding:8px 12px;font-size:11px;font-weight:600">APHIS</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">4</td><td style="text-align:center;font-size:11px">28</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>441</b></td><td style="text-align:center;font-size:11px">112</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>389</b></td><td style="text-align:center;font-size:11px">61</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">0</td></tr>
+                <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 12px;font-size:11px;font-weight:600">FNS</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">2</td><td style="text-align:center;font-size:11px">14</td><td style="text-align:center;font-size:11px">88</td><td style="text-align:center;font-size:11px">201</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>312</b></td><td style="text-align:center;font-size:11px">8</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: SEARCH ════════════════════════════ -->
+<div class="screen" id="screen-search">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">Search & Discovery</div>
+      <div class="tab">Dataset Catalog</div>
+      <div class="topbar-right">
+        <div class="select-pill">All Sources <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="filter-panel">
+        <div class="filter-panel-header"><span>Sources</span></div>
+        <div class="filter-section">
+          <div class="filter-section-label">Repository</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" checked> AG Records</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" checked> SharePoint</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" checked> Email Archive</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox"> Shared Drive</label>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Date Range</div>
+          <div class="filter-select">Last 2 Years <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-label">Component</div>
+          <div class="filter-select">APHIS <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="filter-actions"><button class="btn-primary">Apply</button><button class="btn-ghost">Clear</button></div>
+      </div>
+      <div class="main">
+        <div class="search-hero">
+          <div style="font-size:12px;color:#6b7280;margin-bottom:10px">Searching across: AG Records · SharePoint · Email Archive</div>
+          <div class="search-bar">
+            <input class="search-input-lg" type="text" value="pesticide residue inspection reports imported produce 2024 2025">
+            <button class="search-btn">Search</button>
+          </div>
+          <div class="search-tags">
+            <span style="font-size:11px;color:#6b7280;margin-right:4px">Suggested refinements:</span>
+            <span class="search-tag">+ limit to PPQ division</span>
+            <span class="search-tag">+ enforcement actions only</span>
+            <span class="search-tag">+ exclude draft documents</span>
+          </div>
+          <div style="margin-top:10px;padding:8px 12px;background:#fef3c7;border-radius:6px;font-size:11px;color:#92400e">
+            <b>AI Query Note:</b> This query may be over-broad — estimated 2,400+ responsive documents. Consider adding commodity type (e.g., "fresh vegetables") or country of origin to narrow results.
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:#6b7280;margin-bottom:10px"><b>847 results</b> across 3 sources — sorted by relevance</div>
+
+        <div class="result-card">
+          <div class="result-title">APHIS_PPQ_Annual_Pesticide_Residue_Report_FY2024.pdf</div>
+          <div class="result-meta">AG Records · PPQ Division · Modified Mar 15, 2025 · 148 pages</div>
+          <div class="result-snippet">...quarterly <mark>pesticide residue</mark> monitoring results for <mark>imported produce</mark> commodities including fresh vegetables, citrus, and tropical fruits. <mark>Inspection</mark> data covers all ports of entry...</div>
+          <div style="display:flex;gap:8px;margin-top:8px"><span class="badge badge-orange">Likely Responsive</span><span class="badge badge-purple">b(4) Review Needed</span></div>
+        </div>
+        <div class="result-card">
+          <div class="result-title">Internal Memo: PPQ Compliance Actions Q2 FY2025</div>
+          <div class="result-meta">SharePoint · APHIS Legal · Modified Jun 3, 2025 · 12 pages</div>
+          <div class="result-snippet">...summary of <mark>enforcement actions</mark> taken against importers with repeated <mark>pesticide residue</mark> violations. Includes company names, violation levels, and corrective action timelines...</div>
+          <div style="display:flex;gap:8px;margin-top:8px"><span class="badge badge-green">Likely Responsive</span><span class="badge badge-red">b(4) Applies — Trade Secrets</span></div>
+        </div>
+        <div class="result-card">
+          <div class="result-title">RE: Importer Violation Review — Produce Season 2025</div>
+          <div class="result-meta">Email Archive · From: J. Harmon → M. Torres · Apr 22, 2025</div>
+          <div class="result-snippet">...attached you'll find the <mark>inspection</mark> logs from the San Diego port. Note the elevated <mark>residue</mark> levels on the Chilean grape lot — flagging for your <mark>report</mark>...</div>
+          <div style="display:flex;gap:8px;margin-top:8px"><span class="badge badge-orange">Likely Responsive</span><span class="badge badge-gray">b(6) — Sender Info</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: AI HUB ════════════════════════════ -->
+<div class="screen" id="screen-ai">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">AI Hub</div>
+      <div class="tab">Model Performance</div>
+      <div class="topbar-right">
+        <div class="select-pill">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="main">
+        <!-- AI KPI Row -->
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Requests Auto-Routed</div><div class="kpi-value-row"><span class="kpi-value">94%</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">Officer acceptance rate</div></div>
+          <div class="kpi-card"><div class="kpi-label">Duplicates Detected</div><div class="kpi-value-row"><span class="kpi-value">312</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">FY26 YTD — auto-flagged</div></div>
+          <div class="kpi-card"><div class="kpi-label">PII Instances Found</div><div class="kpi-value-row"><span class="kpi-value">8,441</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">AI first pass</div></div>
+          <div class="kpi-card"><div class="kpi-label">Redaction Time Saved</div><div class="kpi-value-row"><span class="kpi-value">41%</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">vs. manual baseline</div></div>
+          <div class="kpi-card"><div class="kpi-label">Model Confidence</div><div class="kpi-value-row"><span class="kpi-value">91%</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">Routing model avg</div></div>
+        </div>
+
+        <div class="chart-row">
+          <!-- Pending AI Review -->
+          <div class="chart-card">
+            <div class="chart-title">Pending AI Review Items</div>
+            <div class="chart-subtitle">Actions requiring human review</div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #fcd34d;border-radius:6px;background:#fef9c3">
+                <div><div style="font-size:12px;font-weight:600;color:#92400e">PII Flags — High Confidence</div><div style="font-size:11px;color:#b45309;margin-top:2px">4 documents across 3 cases — SSNs, personal emails detected</div></div>
+                <span class="badge badge-orange">47 items</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #fca5a5;border-radius:6px;background:#fee2e2">
+                <div><div style="font-size:12px;font-weight:600;color:#991b1b">b(4) Exemption Suggestions</div><div style="font-size:11px;color:#b91c1c;margin-top:2px">Trade secret and commercial info flagged in 2 cases</div></div>
+                <span class="badge badge-red">23 items</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff">
+                <div><div style="font-size:12px;font-weight:600;color:#1d4ed8">Duplicate Matches</div><div style="font-size:11px;color:#2563eb;margin-top:2px">3 new requests flagged as similar to existing open cases</div></div>
+                <span class="badge badge-blue">3 items</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb">
+                <div><div style="font-size:12px;font-weight:600;color:#374151">Query Optimization Suggestions</div><div style="font-size:11px;color:#6b7280;margin-top:2px">8 searches flagged as over-broad by AI</div></div>
+                <span class="badge badge-gray">8 items</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Model Performance -->
+          <div class="chart-card">
+            <div class="chart-title">Routing Model Performance</div>
+            <div class="chart-subtitle">Acceptance rate by component — last 90 days</div>
+            <div style="margin-top:14px">
+              <div class="stat-row"><div class="stat-bar-label">FSA</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:96%;"><span style="font-size:9px;color:white">96%</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">APHIS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:94%;"><span style="font-size:9px;color:white">94%</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">FNS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:91%;"><span style="font-size:9px;color:white">91%</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">NRCS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:88%;"><span style="font-size:9px;color:white">88%</span></div></div></div>
+              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">AMS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:85%;"><span style="font-size:9px;color:white">85%</span></div></div></div>
+            </div>
+            <div style="margin-top:14px;padding:8px;background:#f0fdf4;border-radius:6px;font-size:11px;color:#15803d">
+              Model last retrained: Apr 1, 2026 · Next scheduled: May 1, 2026
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCREEN: ADMIN ════════════════════════════ -->
+<div class="screen" id="screen-admin">
+  <div class="shell">
+    <div class="topbar">
+      <span class="app-title">C3 AI FOIA Management</span>
+      <div class="tab active">Admin</div>
+      <div class="tab">Users</div>
+      <div class="tab">Integrations</div>
+      <div class="tab">Audit</div>
+    </div>
+    <div class="content-area">
+      <div class="main">
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-title">User Management</div>
+            <div class="chart-subtitle" style="margin-bottom:10px">Active platform users — 214 total</div>
+            <div class="table-actions" style="margin-bottom:10px"><input class="search-input" type="text" placeholder="Search users..."><button class="btn-primary" style="margin-left:8px">+ Add User</button></div>
+            <table>
+              <thead><tr><th>Name</th><th>Component</th><th>Role</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>M. Torres</td><td>APHIS</td><td><span class="badge badge-blue">FOIA Officer</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td>K. Johnson</td><td>FNS</td><td><span class="badge badge-purple">Attorney</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td>D. Patel</td><td>FSA</td><td><span class="badge badge-blue">FOIA Officer</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td>S. Kim</td><td>NRCS</td><td><span class="badge badge-blue">FOIA Officer</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td>L. Washington</td><td>OGC</td><td><span class="badge badge-orange">Supervisor</span></td><td><span class="badge badge-green">Active</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Integration Status</div>
+            <div class="chart-subtitle" style="margin-bottom:12px">Connected systems health check</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">AG Records (FedRAMP)</span><span class="badge badge-green">● Connected</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">SharePoint / OneDrive</span><span class="badge badge-green">● Connected</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">FOIA.gov API</span><span class="badge badge-green">● Connected</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">USDA ePortal (Intake)</span><span class="badge badge-green">● Connected</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid #fcd34d;border-radius:6px;background:#fef9c3"><span style="font-size:12px;font-weight:500">FSA FOIA CAP System</span><span class="badge badge-orange">⚠ Migration Pending</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">PST / Email Archive</span><span class="badge badge-gray">○ Not Configured</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    const map = {dashboard:0,workload:1,casedetail:2,documents:2,search:3,analytics:4,ai:5,admin:6};
+    const navItems = document.querySelectorAll('.nav-item');
+    if (map[name] !== undefined) navItems[map[name]].classList.add('active');
+  }
+</script>
+</body>
+</html>
