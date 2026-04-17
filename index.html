@@ -193,6 +193,57 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+/* WORKFLOW PIPELINE */
+.wflow{display:flex;align-items:center;margin-bottom:14px;background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:12px 16px;overflow-x:auto;gap:0;}
+.wf-step{display:flex;flex-direction:column;align-items:center;min-width:78px;}
+.wf-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.wf-dot.done{background:#dcfce7;color:#15803d;border:2px solid #16a34a;}
+.wf-dot.active{background:#dbeafe;color:#1d4ed8;border:2px solid #2563eb;}
+.wf-dot.todo{background:#f9fafb;color:#9ca3af;border:2px dashed #d1d5db;}
+.wf-lbl{font-size:9px;color:var(--t2);text-align:center;margin-top:4px;line-height:1.2;max-width:72px;}
+.wf-lbl.active{color:var(--blue);font-weight:700;}
+.wf-lbl.done{color:#15803d;}
+.wf-conn{flex:1;height:2px;background:#e5e7eb;min-width:14px;margin-bottom:13px;}
+.wf-conn.done{background:#16a34a;}
+.wf-conn.active{background:#93c5fd;}
+/* RAG STATUS PANEL */
+.rag-panel{background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1px solid #a7f3d0;border-radius:8px;padding:12px;margin-bottom:12px;}
+.rag-ttl{font-size:10px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.rag-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.rag-step{background:var(--wh);border-radius:6px;padding:8px 10px;border:1px solid #d1fae5;cursor:pointer;transition:border-color .15s;}
+.rag-step:hover{border-color:var(--green);}
+.rag-step-icon{font-size:14px;margin-bottom:3px;}
+.rag-step-t{font-size:9.5px;font-weight:600;color:var(--t2);margin-bottom:2px;}
+.rag-step-v{font-size:12px;font-weight:700;color:#065f46;}
+.rag-step-s{font-size:9px;color:var(--t3);margin-top:1px;}
+/* OPS BAR */
+.ops-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.ops-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;background:var(--wh);border:1px solid var(--bd);border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;color:var(--t1);transition:all .15s;white-space:nowrap;}
+.ops-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l);}
+.ops-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.ops-btn.primary{background:var(--blue);color:white;border-color:var(--blue);}
+.ops-btn.primary:hover{background:#1d4ed8;}
+/* ACTION QUEUE */
+.aq-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s;}
+.aq-item:hover{background:#f9fafb;}
+.aq-item:last-child{border-bottom:none;}
+.aq-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.aq-txt{flex:1;font-size:11px;color:var(--t1);}
+.aq-sub{font-size:10px;color:var(--t3);}
+/* RECORD ROW */
+.rr{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--bd);}
+.rr:last-child{border-bottom:none;}
+.rr-rel{width:38px;text-align:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.rr-info{flex:1;}
+.rr-name{font-size:11px;font-weight:600;color:var(--t1);}
+.rr-meta{font-size:10px;color:var(--t2);margin-top:1px;}
+/* APPROVAL CHAIN */
+.ap-step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--bd);}
+.ap-step:last-child{border-bottom:none;}
+.ap-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.ap-info{flex:1;}
+.ap-role{font-size:11px;font-weight:600;color:var(--t1);}
+.ap-person{font-size:10px;color:var(--t2);}
 </style>
 </head>
 <body>
@@ -241,11 +292,11 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
     <div class="krow" id="kpi-row"></div>
     <div class="grid2">
       <div class="card"><div class="card-title">Request Volume by Component — FY2024</div><div class="card-sub">Actual received · Source: USDA Annual FOIA Report</div><svg id="comp-chart" width="100%" height="190" viewBox="0 0 320 190"></svg></div>
-      <div class="card"><div class="card-title">Volume Trend — FY2022 to FY2024</div><div class="card-sub">Received vs. Processed vs. Backlog</div><svg id="trend-chart" width="100%" height="190" viewBox="0 0 320 190"></svg></div>
+      <div class="card"><div class="card-title">Action Required</div><div class="card-sub">Cases needing immediate officer attention</div><div id="action-queue"></div></div>
     </div>
     <div class="tc">
       <div class="th"><b>Recent Cases</b><div class="th-acts"><input class="si" type="text" placeholder="Search cases..." oninput="filterWorkTable(this.value)"><button class="btn btn-p btn-sm" onclick="nav('work')">View All</button></div></div>
-      <table><thead><tr><th>Case #</th><th>Requester</th><th>Component</th><th>Received</th><th>Due</th><th>Days</th><th>Track</th><th>Status</th><th>AI Score</th></tr></thead>
+      <table><thead><tr><th>Case #</th><th>Requester</th><th>Component</th><th>Received</th><th>Due</th><th>Days</th><th>Track</th><th>Status</th><th>AI Work</th></tr></thead>
       <tbody id="dash-table"></tbody></table>
     </div>
   </div>
@@ -287,7 +338,7 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
       <div class="th"><b id="work-count">Active Cases — 15 total</b>
         <div class="th-acts"><input class="si" type="text" placeholder="Search case #, requester..." oninput="filterWorkTable(this.value)"></div>
       </div>
-      <table><thead><tr><th onclick="sortWork('id')">Case # ↕</th><th>Requester</th><th onclick="sortWork('comp')">Component ↕</th><th style="max-width:160px">Description</th><th onclick="sortWork('rec')">Received ↕</th><th onclick="sortWork('due')">Due ↕</th><th onclick="sortWork('days')">Days ↕</th><th>Track</th><th>Status</th><th onclick="sortWork('score')">AI Score ↕</th><th>Assigned</th></tr></thead>
+      <table><thead><tr><th onclick="sortWork('id')">Case # ↕</th><th>Requester</th><th onclick="sortWork('comp')">Component ↕</th><th style="max-width:160px">Description</th><th onclick="sortWork('rec')">Received ↕</th><th onclick="sortWork('due')">Due ↕</th><th onclick="sortWork('days')">Days ↕</th><th>Track</th><th>Status</th><th>AI Work</th><th>Assigned</th></tr></thead>
       <tbody id="work-table"></tbody></table>
     </div>
   </div>
@@ -305,33 +356,94 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
     <span style="font-size:11px;color:var(--t2)">← <a href="#" onclick="nav('work');return false" style="color:var(--blue)">Workload</a></span>
     <button class="btn btn-r btn-sm" onclick="openModal('stopclock')">Stop the Clock</button>
     <button class="btn btn-gh btn-sm" onclick="openModal('transfer')">Transfer</button>
-    <button class="btn btn-g btn-sm" onclick="closeCase()">Close Case</button>
+    <button class="btn btn-g btn-sm" onclick="approveRouting()">Approve Routing</button>
+    <button class="btn btn-p btn-sm" onclick="closeCase()">Close Case</button>
   </div>
 </div>
 <div class="ca">
-<div class="main" style="max-width:900px">
-  <div class="clk"><span class="clk-t"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>21-Day Clock Running — Due: <b id="case-due">May 6, 2026</b> &nbsp;|&nbsp; <b id="case-days-left">12 business days remaining</b></span><span style="font-size:10px;color:#92400e" id="case-started">Started Apr 8, 2026</span></div>
-  <div class="ai-c">
-    <div class="ai-ttl"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:var(--blue);fill:none;stroke-width:2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3"/></svg>AI Analysis</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px">
-      <div><div style="color:var(--t2);margin-bottom:3px">Complexity Score</div><div style="font-size:22px;font-weight:800;color:#1d4ed8" id="case-score">88</div><div class="sbar"><div class="sbar-f" id="case-score-bar" style="width:88%"></div></div><div id="case-track-label" style="color:#b45309;font-weight:600;font-size:10px">HIGH — Complex Track</div></div>
-      <div><div style="color:var(--t2);margin-bottom:3px">Routing</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="case-routing">APHIS — PPQ Division</div><div style="color:var(--t2);margin-top:2px;font-size:10px" id="case-conf">Confidence: 94%</div><div style="color:var(--green);margin-top:2px;font-size:10px">✓ Accepted</div></div>
-      <div><div style="color:var(--t2);margin-bottom:3px">Duplicate Detection</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="case-dup">1 Similar Case</div><div style="color:var(--blue);margin-top:2px;font-size:10px;cursor:pointer">APHIS-2026-01041 →</div></div>
+<div class="main" style="max-width:960px">
+
+  <!-- CLOCK BANNER -->
+  <div class="clk" id="case-clock"><span class="clk-t"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>21-Day Statutory Clock Running — Due: <b id="case-due">May 6, 2026</b> &nbsp;|&nbsp; <b id="case-days-left">12 business days remaining</b></span><span style="font-size:10px;color:#92400e" id="case-started">Received Apr 8, 2026</span></div>
+
+  <!-- AI AGENT STATUS (RAG auto-run on intake) -->
+  <div class="rag-panel">
+    <div class="rag-ttl">
+      <span style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#065f46;fill:none;stroke-width:2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3"/></svg>AI Agent — Completed on Intake</span>
+      <span style="font-size:9px;color:#6ee7b7;font-weight:500" id="rag-time">Apr 8, 2026 8:51 AM · 3m 12s</span>
+    </div>
+    <div class="rag-steps">
+      <div class="rag-step" onclick="caseTab('records',document.querySelector('[data-tab=records]'))">
+        <div class="rag-step-icon">&#x1F50D;</div>
+        <div class="rag-step-t">Records Search</div>
+        <div class="rag-step-v" id="rag-docs">312 docs found</div>
+        <div class="rag-step-s">AG Records · SharePoint · Email</div>
+      </div>
+      <div class="rag-step" onclick="caseTab('aisummary',document.querySelector('[data-tab=aisummary]'))">
+        <div class="rag-step-icon">&#x1F4CB;</div>
+        <div class="rag-step-t">AI Summary</div>
+        <div class="rag-step-v">Ready</div>
+        <div class="rag-step-s">5 themes · draft response</div>
+      </div>
+      <div class="rag-step" onclick="caseTab('redaction',document.querySelector('[data-tab=redaction]'))">
+        <div class="rag-step-icon">&#x270F;&#xFE0F;</div>
+        <div class="rag-step-t">Redaction Pass</div>
+        <div class="rag-step-v" id="rag-flags">70 flags</div>
+        <div class="rag-step-s">47 PII · 23 b(4) — review needed</div>
+      </div>
+      <div class="rag-step" onclick="caseTab('workflow',document.querySelector('[data-tab=workflow]'))">
+        <div class="rag-step-icon">&#x2705;</div>
+        <div class="rag-step-t">Routing</div>
+        <div class="rag-step-v" id="rag-routing">APHIS</div>
+        <div class="rag-step-s">Pending officer approval</div>
+      </div>
     </div>
   </div>
+
+  <!-- CORRESPONDENCE WORKFLOW PIPELINE -->
+  <div class="wflow" id="case-wflow">
+    <div class="wf-step"><div class="wf-dot done">&#10003;</div><div class="wf-lbl done">Received</div></div>
+    <div class="wf-conn done"></div>
+    <div class="wf-step"><div class="wf-dot done">&#10003;</div><div class="wf-lbl done">Records Located</div></div>
+    <div class="wf-conn done"></div>
+    <div class="wf-step"><div class="wf-dot active" id="wf-dot-3">3</div><div class="wf-lbl active" id="wf-lbl-3">Officer Review</div></div>
+    <div class="wf-conn active"></div>
+    <div class="wf-step"><div class="wf-dot todo">4</div><div class="wf-lbl">Redaction Approved</div></div>
+    <div class="wf-conn"></div>
+    <div class="wf-step"><div class="wf-dot todo">5</div><div class="wf-lbl">Response Drafted</div></div>
+    <div class="wf-conn"></div>
+    <div class="wf-step"><div class="wf-dot todo">6</div><div class="wf-lbl">Supervisory Approval</div></div>
+    <div class="wf-conn"></div>
+    <div class="wf-step"><div class="wf-dot todo">7</div><div class="wf-lbl">Sent to Requester</div></div>
+  </div>
+
+  <!-- OPERATIONAL TOOLS BAR -->
+  <div class="ops-bar">
+    <div class="ops-btn primary" onclick="caseTab('records',document.querySelector('[data-tab=records]'))"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>View Records</div>
+    <div class="ops-btn" onclick="simUpload()"><svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>Upload Doc</div>
+    <div class="ops-btn" onclick="caseTab('redaction',document.querySelector('[data-tab=redaction]'))"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Redact</div>
+    <div class="ops-btn" onclick="caseTab('aisummary',document.querySelector('[data-tab=aisummary]'))"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>AI Summary</div>
+    <div class="ops-btn" onclick="draftResponse()"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Draft Response</div>
+    <div class="ops-btn" onclick="caseTab('workflow',document.querySelector('[data-tab=workflow]'))"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Workflow</div>
+  </div>
+
+  <!-- TABS -->
   <div class="card">
     <div class="dtabs" id="case-tabs">
-      <div class="dt on" onclick="caseTab('summary',this)">Summary</div>
-      <div class="dt" onclick="caseTab('docs',this)">Documents (4)</div>
-      <div class="dt" onclick="caseTab('log',this)">Audit Log</div>
-      <div class="dt" onclick="caseTab('assign',this)">Assignments</div>
-      <div class="dt" onclick="caseTab('appeal',this)">Appeal</div>
+      <div class="dt on" data-tab="summary" onclick="caseTab('summary',this)">Summary</div>
+      <div class="dt" data-tab="records" onclick="caseTab('records',this)">Records <span class="b b-b" style="margin-left:4px;font-size:8px" id="tab-rec-count">312</span></div>
+      <div class="dt" data-tab="aisummary" onclick="caseTab('aisummary',this)">AI Summary</div>
+      <div class="dt" data-tab="redaction" onclick="caseTab('redaction',this)">Redaction <span class="b b-r" style="margin-left:4px;font-size:8px">70</span></div>
+      <div class="dt" data-tab="workflow" onclick="caseTab('workflow',this)">Workflow</div>
+      <div class="dt" data-tab="log" onclick="caseTab('log',this)">Audit Log</div>
+      <div class="dt" data-tab="appeal" onclick="caseTab('appeal',this)">Appeal</div>
     </div>
+
     <!-- SUMMARY TAB -->
     <div id="tab-summary">
       <div class="fg2">
         <div class="fg"><div class="flbl">Case Number</div><div class="fval" id="cd-num">APHIS-2026-01103</div></div>
-        <div class="fg"><div class="flbl">Status</div><div class="fval"><span class="b b-o" id="cd-status">Perfection Required</span></div></div>
+        <div class="fg"><div class="flbl">Status</div><div class="fval"><span class="b b-o" id="cd-status">In Review</span></div></div>
         <div class="fg"><div class="flbl">Requester</div><div class="fval" id="cd-req">Environmental Working Group (EWG)</div></div>
         <div class="fg"><div class="flbl">Requester Type</div><div class="fval" id="cd-rtype">Non-profit / Advocacy</div></div>
         <div class="fg"><div class="flbl">Email</div><div class="fval" id="cd-email">foia@ewg.org</div></div>
@@ -342,7 +454,7 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
         <div class="fg"><div class="flbl">Fee Category</div><div class="fval" id="cd-fee">News Media — Waiver Requested</div></div>
         <div class="fg full"><div class="flbl">Request Description</div><div class="fval" style="white-space:normal;line-height:1.5" id="cd-desc">All records related to pesticide residue inspection reports for imported produce, including internal APHIS memos, inspection logs, and enforcement actions, from January 1, 2024 through March 31, 2026.</div></div>
         <div class="fg"><div class="flbl">Assigned Officer</div><div class="fval e" id="cd-officer">M. Torres — APHIS FOIA Office</div></div>
-        <div class="fg"><div class="flbl">Perfection Note</div><div class="fval e" style="color:#b45309" id="cd-note">Awaiting scope clarification — sent Apr 12</div></div>
+        <div class="fg"><div class="flbl">Perfection Note</div><div class="fval e" style="color:#b45309" id="cd-note">—</div></div>
       </div>
       <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
         <div class="flbl" style="margin-bottom:7px">Exemptions Applied</div>
@@ -353,30 +465,125 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
         </div>
       </div>
     </div>
-    <!-- DOCS TAB -->
-    <div id="tab-docs" style="display:none">
-      <div class="ai-c" style="margin-bottom:10px"><div class="ai-ttl">AI Redaction Pass Complete</div><div style="font-size:11px;color:var(--t1)">Reviewed <b>4 documents (312 pages)</b> — flagged <b>47 PII instances</b> and <b>23 potential b(4) passages</b>. <span style="color:var(--blue);cursor:pointer">Review suggestions →</span></div></div>
-      <div id="docs-list">
-        <div class="dr"><div class="di"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">APHIS_PPQ_Pesticide_Inspection_FY2024.pdf</div><div class="dm">148 pages · Apr 10 · M. Torres</div></div><span class="b b-r">31 AI Flags</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening redaction viewer...','ok')">Review</button></div>
-        <div class="dr"><div class="di"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Internal_Memos_ImportProduce_Q1Q2_2025.pdf</div><div class="dm">94 pages · Apr 10 · M. Torres</div></div><span class="b b-o">18 Flags — In Review</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening redaction viewer...','ok')">Review</button></div>
-        <div class="dr"><div class="di" style="background:#dcfce7"><svg viewBox="0 0 24 24" style="fill:#15803d"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Enforcement_Actions_FY2024_FY2025.pdf</div><div class="dm">52 pages · Apr 11 · M. Torres</div></div><span class="b b-g">Redaction Complete</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Downloading...','ok')">Download</button></div>
-        <div class="dr"><div class="di" style="background:#ede9fe"><svg viewBox="0 0 24 24" style="fill:#6d28d9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Search_Memo_APHIS_PPQ_Apr12.docx</div><div class="dm">3 pages · AI-generated · Approved Apr 12</div></div><span class="b b-p">Search Memo</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening memo...','ok')">View</button></div>
+
+    <!-- RECORDS TAB -->
+    <div id="tab-records" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--t2)">AI found <b id="rec-total">312 documents</b> across 3 repositories — confirm responsiveness below</div>
+        <div style="display:flex;gap:6px">
+          <input class="si" style="width:200px" type="text" placeholder="Filter records..." oninput="filterRecords(this.value)">
+          <button class="btn btn-g btn-sm" onclick="simUpload()">+ Upload</button>
+        </div>
       </div>
-      <div style="margin-top:10px"><button class="btn btn-p btn-sm" onclick="simUpload()">+ Upload Document</button>&nbsp;<button class="btn btn-g btn-sm" onclick="simRedaction()">Run AI Redaction Pass</button></div>
+      <div class="tc" id="rec-list">
+        <div class="rr"><div class="rr-rel" style="color:#15803d">98%</div><div class="rr-info"><div class="rr-name">APHIS_PPQ_Pesticide_Inspection_FY2024.pdf</div><div class="rr-meta">AG Records · PPQ Division · 148 pages · Mar 15, 2025</div></div><span class="b b-o">31 Redaction Flags</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening in redaction viewer...','ok')">Redact</button><button class="btn btn-g btn-sm" style="margin-left:4px" onclick="toast('Marked responsive','ok')">&#10003; Responsive</button></div>
+        <div class="rr"><div class="rr-rel" style="color:#15803d">94%</div><div class="rr-info"><div class="rr-name">Internal_Memos_ImportProduce_Q1Q2_2025.pdf</div><div class="rr-meta">SharePoint · APHIS Legal · 94 pages · Jun 3, 2025</div></div><span class="b b-r">18 Flags — b(4) Review</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening in redaction viewer...','ok')">Redact</button><button class="btn btn-g btn-sm" style="margin-left:4px" onclick="toast('Marked responsive','ok')">&#10003; Responsive</button></div>
+        <div class="rr"><div class="rr-rel" style="color:#15803d">91%</div><div class="rr-info"><div class="rr-name">Enforcement_Actions_FY2024_FY2025.pdf</div><div class="rr-meta">AG Records · Enforcement · 52 pages · Apr 11, 2025</div></div><span class="b b-g">Redaction Complete</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Downloading...','ok')">Download</button><button class="btn btn-g btn-sm" style="margin-left:4px" onclick="toast('Marked responsive','ok')">&#10003; Responsive</button></div>
+        <div class="rr"><div class="rr-rel" style="color:#b45309">73%</div><div class="rr-info"><div class="rr-name">APHIS Import Surveillance Quarterly Summary Q3 2024.pdf</div><div class="rr-meta">AG Records · PPQ Import · 34 pages · Nov 2, 2024</div></div><span class="b b-b">Possibly Responsive</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening document...','ok')">Review</button><button class="btn btn-gh btn-sm" style="margin-left:4px" onclick="toast('Marked non-responsive','ok')">✗ Exclude</button></div>
+        <div class="rr"><div class="rr-rel" style="color:#b45309">68%</div><div class="rr-info"><div class="rr-name">RE: Importer Violation Review — Produce Season 2025.msg</div><div class="rr-meta">Email Archive · From: J. Harmon → M. Torres · Apr 22, 2025</div></div><span class="b b-gr">b(6) Personal Info</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening email...','ok')">Review</button><button class="btn btn-gh btn-sm" style="margin-left:4px" onclick="toast('Marked non-responsive','ok')">✗ Exclude</button></div>
+        <div class="rr" style="padding:9px 12px;color:var(--t2);font-size:11px;text-align:center">+ 307 more documents — <span style="color:var(--blue);cursor:pointer" onclick="toast('Loading all records...','ok')">Load all</span> or <span style="color:var(--blue);cursor:pointer" onclick="toast('Exporting record list...','ok')">export list</span></div>
+      </div>
     </div>
-    <!-- LOG TAB -->
-    <div id="tab-log" style="display:none" id="audit-log-tab">
+
+    <!-- AI SUMMARY TAB -->
+    <div id="tab-aisummary" style="display:none">
+      <div class="rag-panel" style="margin-bottom:12px">
+        <div class="rag-ttl">AI-Generated Case Summary — APHIS-2026-01103</div>
+        <div style="font-size:12px;color:var(--t1);line-height:1.7">
+          <b>Request Overview:</b> EWG seeks pesticide residue inspection reports for imported produce covering Jan 2024–Mar 2026. Records span PPQ Division enforcement activities, port-of-entry sampling logs, and internal compliance memos.<br><br>
+          <b>Key Themes Identified:</b><br>
+          <span class="b b-o" style="margin-right:4px;margin-bottom:4px;display:inline-flex">Pesticide Residue Monitoring</span>
+          <span class="b b-b" style="margin-right:4px;margin-bottom:4px;display:inline-flex">Import Enforcement Actions</span>
+          <span class="b b-p" style="margin-right:4px;margin-bottom:4px;display:inline-flex">Trade Secret Considerations (b4)</span>
+          <span class="b b-gr" style="margin-right:4px;margin-bottom:4px;display:inline-flex">Multi-Country Origin Data</span>
+          <span class="b b-g" style="margin-right:4px;margin-bottom:4px;display:inline-flex">FY2024 Sampling Statistics</span>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">Recommended Exemptions</div>
+        <div class="card-sub">AI-identified based on document content scan</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;background:#fef3c7;border-radius:5px;font-size:11px"><span class="b b-p">b(4)</span><span>Commercial trade secrets — importer company names and proprietary compliance data in 2 memos (47 passages flagged)</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;background:#f5f3ff;border-radius:5px;font-size:11px"><span class="b b-p">b(6)</span><span>Personal privacy — individual APHIS inspector identifiers in sampling logs (12 instances)</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;background:#eff6ff;border-radius:5px;font-size:11px"><span class="b b-b">b(7)(F)</span><span>Law enforcement risk — ongoing investigation reference in Q3 2024 memo (1 passage — verify with OGC)</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Draft Response Approach</div>
+        <div class="card-sub">AI-suggested · Officer must review and approve before sending</div>
+        <div style="font-size:11px;color:var(--t1);line-height:1.7;margin-top:6px">
+          USDA APHIS is prepared to release approximately 312 pages of responsive records. Certain information has been withheld pursuant to FOIA Exemptions b(4) and b(6). Records will be released in two tranches: a partial release by [DATE] with final release upon resolution of b(7)(F) consultation with OGC.<br><br>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn btn-g btn-sm" onclick="draftResponse()">Use This Draft</button>
+            <button class="btn btn-gh btn-sm" onclick="toast('Regenerating with different approach...','ok')">Regenerate</button>
+            <button class="btn btn-gh btn-sm" onclick="toast('Editing draft...','ok')">Edit Manually</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REDACTION TAB -->
+    <div id="tab-redaction" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="ai-c" style="flex:1;margin-bottom:0;margin-right:10px">
+          <div class="ai-ttl">AI Redaction Pass Complete</div>
+          <div style="font-size:11px;color:var(--t1)">Reviewed <b>312 pages across 4 documents</b> — <b>47 PII instances</b> and <b>23 b(4) passages</b> flagged. Awaiting officer approval.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn btn-g btn-sm" onclick="toast('Approving all AI redaction suggestions...','ok')">Approve All</button>
+          <button class="btn btn-r btn-sm" onclick="simRedaction()">Re-run Pass</button>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="dr"><div class="di"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">APHIS_PPQ_Pesticide_Inspection_FY2024.pdf</div><div class="dm">148 pages · 31 flags: 18 PII · 13 b(4)</div></div><span class="b b-r">Needs Review</span><button class="btn btn-p btn-sm" style="margin-left:8px" onclick="toast('Opening inline redaction viewer...','ok')">Open Redaction View</button></div>
+        <div class="dr"><div class="di"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Internal_Memos_ImportProduce_Q1Q2_2025.pdf</div><div class="dm">94 pages · 18 flags: 9 PII · 9 b(4)</div></div><span class="b b-o">In Review</span><button class="btn btn-p btn-sm" style="margin-left:8px" onclick="toast('Opening inline redaction viewer...','ok')">Open Redaction View</button></div>
+        <div class="dr"><div class="di" style="background:#dcfce7"><svg viewBox="0 0 24 24" style="fill:#15803d"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Enforcement_Actions_FY2024_FY2025.pdf</div><div class="dm">52 pages · Officer-approved Apr 11</div></div><span class="b b-g">Approved</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Downloading redacted PDF...','ok')">Download</button></div>
+        <div class="dr"><div class="di" style="background:#ede9fe"><svg viewBox="0 0 24 24" style="fill:#6d28d9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Search_Memo_APHIS_PPQ_Apr12.docx</div><div class="dm">3 pages · AI-generated · No redactions needed</div></div><span class="b b-g">Clean</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening memo...','ok')">View</button></div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn btn-p btn-sm" onclick="simUpload()">+ Upload Document</button>
+        <button class="btn btn-g btn-sm" onclick="simRedaction()">Run AI Redaction Pass</button>
+        <button class="btn btn-gh btn-sm" onclick="toast('Exporting redacted package...','ok')">Export Redacted Package</button>
+      </div>
+    </div>
+
+    <!-- WORKFLOW / APPROVAL TAB -->
+    <div id="tab-workflow" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <div class="flbl" style="margin-bottom:10px">Routing Approval Chain</div>
+          <div style="border:1px solid var(--bd);border-radius:7px;overflow:hidden">
+            <div class="ap-step"><div class="ap-num" style="background:#dcfce7;color:#15803d">&#10003;</div><div class="ap-info"><div class="ap-role">AI Routing Suggestion</div><div class="ap-person">APHIS — PPQ Division · Confidence 94% · Apr 8, 9:03 AM</div></div><span class="b b-g">Auto-Routed</span></div>
+            <div class="ap-step" style="background:#eff6ff"><div class="ap-num" style="background:#dbeafe;color:#1d4ed8;border:2px solid var(--blue)">2</div><div class="ap-info"><div class="ap-role">FOIA Officer Acceptance</div><div class="ap-person">M. Torres — APHIS FOIA Office · Pending</div></div><button class="btn btn-g btn-sm" onclick="approveRouting()">Accept Routing</button></div>
+            <div class="ap-step"><div class="ap-num" style="background:#f3f4f6;color:#9ca3af;border:2px dashed #d1d5db">3</div><div class="ap-info"><div class="ap-role">Supervisor Confirmation</div><div class="ap-person">L. Washington — OGC Central · Waiting</div></div><span class="b b-gr">Pending</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="flbl" style="margin-bottom:10px">Response Approval Chain</div>
+          <div style="border:1px solid var(--bd);border-radius:7px;overflow:hidden">
+            <div class="ap-step"><div class="ap-num" style="background:#f3f4f6;color:#9ca3af;border:2px dashed #d1d5db">1</div><div class="ap-info"><div class="ap-role">Draft Response</div><div class="ap-person">M. Torres — APHIS · Not Started</div></div><button class="btn btn-gh btn-sm" onclick="draftResponse()">Draft Now</button></div>
+            <div class="ap-step"><div class="ap-num" style="background:#f3f4f6;color:#9ca3af;border:2px dashed #d1d5db">2</div><div class="ap-info"><div class="ap-role">Attorney Review</div><div class="ap-person">K. Johnson — FNS OGC · Not Started</div></div><span class="b b-gr">Waiting</span></div>
+            <div class="ap-step"><div class="ap-num" style="background:#f3f4f6;color:#9ca3af;border:2px dashed #d1d5db">3</div><div class="ap-info"><div class="ap-role">Supervisory Sign-Off</div><div class="ap-person">L. Washington — OGC Central · Not Started</div></div><span class="b b-gr">Waiting</span></div>
+            <div class="ap-step"><div class="ap-num" style="background:#f3f4f6;color:#9ca3af;border:2px dashed #d1d5db">4</div><div class="ap-info"><div class="ap-role">Release to Requester</div><div class="ap-person">M. Torres — Portal dispatch</div></div><span class="b b-gr">Waiting</span></div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:6px">
+            <button class="btn btn-gh btn-sm" onclick="openModal('transfer')">Reassign</button>
+            <button class="btn btn-o btn-sm" onclick="toast('Escalation sent to supervisor','ok')">Escalate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIT LOG TAB -->
+    <div id="tab-log" style="display:none">
       <div id="case-log-list">
         <div class="log-i"><div class="log-d"></div><div><div class="log-t">Perfection notice sent to requester — scope clarification requested</div><div class="log-s">Apr 12, 2026 2:41 PM — M. Torres</div></div></div>
-        <div class="log-i"><div class="log-d" style="background:#93c5fd"></div><div><div class="log-t">AI complexity score generated: 88 — Complex track recommended (accepted)</div><div class="log-s">Apr 8, 2026 9:03 AM — System · AI Engine v2.1</div></div></div>
+        <div class="log-i"><div class="log-d" style="background:#93c5fd"></div><div><div class="log-t">AI agent completed: 312 docs found, summary generated, redaction pass done (70 flags)</div><div class="log-s">Apr 8, 2026 8:51 AM — System · AI Agent v2.1</div></div></div>
+        <div class="log-i"><div class="log-d" style="background:#93c5fd"></div><div><div class="log-t">AI routing: APHIS PPQ Division suggested — confidence 94% — pending officer acceptance</div><div class="log-s">Apr 8, 2026 9:03 AM — System · AI Engine v2.1</div></div></div>
         <div class="log-i"><div class="log-d"></div><div><div class="log-t">Case created via USDA ePortal — submission #EP-44921</div><div class="log-s">Apr 8, 2026 8:47 AM — System · Intake</div></div></div>
       </div>
     </div>
-    <!-- ASSIGN TAB -->
-    <div id="tab-assign" style="display:none">
-      <table><thead><tr><th>Date</th><th>Assigned To</th><th>From</th><th>To</th><th>Reason</th></tr></thead>
-      <tbody><tr><td>Apr 8, 2026</td><td>M. Torres</td><td>Intake Queue</td><td>APHIS FOIA</td><td>Initial AI routing — PPQ subject matter</td></tr></tbody></table>
-    </div>
+
     <!-- APPEAL TAB -->
     <div id="tab-appeal" style="display:none">
       <div style="padding:20px;text-align:center;color:var(--t2)"><div style="font-size:24px;margin-bottom:8px">—</div><div style="font-size:12px">No appeal filed for this case.</div><button class="btn btn-gh btn-sm" style="margin-top:10px" onclick="toast('Appeal form opening...','ok')">File Appeal</button></div>
@@ -623,9 +830,9 @@ select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
       <div class="ai-c">
         <div class="ai-ttl">AI Analysis Complete</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px">
-          <div><div style="color:var(--t2);margin-bottom:3px">Complexity Score</div><div class="score-label" id="new-score" style="color:var(--blue)">—</div><div class="sbar"><div class="sbar-f" id="new-score-bar" style="width:0%"></div></div><div id="new-track" style="font-size:10px;font-weight:600;color:#b45309"></div></div>
-          <div><div style="color:var(--t2);margin-bottom:3px">Route To</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="new-routing">—</div><div id="new-conf" style="color:var(--t2);margin-top:2px;font-size:10px"></div></div>
-          <div><div style="color:var(--t2);margin-bottom:3px">Duplicates</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="new-dup">Checking...</div></div>
+          <div><div style="color:var(--t2);margin-bottom:3px">Route To</div><div style="font-weight:600;font-size:14px;margin-top:3px" id="new-routing">—</div><div id="new-conf" style="color:var(--t2);margin-top:2px;font-size:10px"></div><div style="color:var(--green);margin-top:3px;font-size:10px" id="new-track"></div></div>
+          <div><div style="color:var(--t2);margin-bottom:3px">Duplicates</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="new-dup">Checking...</div><div style="color:var(--t2);margin-top:2px;font-size:10px">Cross-referenced open cases</div></div>
+          <div><div style="color:var(--t2);margin-bottom:3px">AI Agent</div><div style="font-weight:600;font-size:12px;margin-top:3px;color:var(--green)" id="new-agent-status">Will run on intake</div><div style="color:var(--t2);margin-top:2px;font-size:10px">Records search · summary · redaction</div></div>
         </div>
       </div>
       <div class="fg" style="margin-top:10px"><div class="flbl">Assigned Officer</div><select class="fval e" id="new-officer"><option>M. Torres</option><option>K. Johnson</option><option>D. Patel</option><option>S. Kim</option><option>Unassigned</option></select></div>
@@ -705,21 +912,21 @@ const D = {
 
 // ═══════════════════════════ CASES DATA ═══════════════════════════
 const CASES = [
-  {id:'FNS-2026-00892',req:'Center on Budget & Policy Priorities',comp:'FNS',desc:'SNAP waivers issued during COVID-19 pandemic',recv:'Apr 5',due:'May 1',days:-2,track:'Complex',status:'Overdue',score:91,officer:'K. Johnson'},
-  {id:'APHIS-2026-01103',req:'Environmental Working Group',comp:'APHIS',desc:'Pesticide residue inspection reports imported produce',recv:'Apr 8',due:'May 6',days:12,track:'Complex',status:'Perfection',score:88,officer:'M. Torres'},
-  {id:'APHIS-2026-01099',req:'New York Times / Media',comp:'APHIS',desc:'H5N1 avian flu inspection logs and enforcement actions',recv:'Apr 9',due:'May 7',days:13,track:'Complex',status:'AI Flagged',score:94,officer:'M. Torres'},
-  {id:'FSA-2026-04821',req:'A. Chen / Reuters',comp:'FSA',desc:'Farm loan payment records FY2024 by county',recv:'Apr 10',due:'May 8',days:14,track:'Simple',status:'In Review',score:72,officer:'D. Patel'},
-  {id:'FSA-2026-04819',req:'J. Williams / Individual',comp:'FSA',desc:'Crop insurance payout data for Iowa FY2023',recv:'Apr 7',due:'May 5',days:11,track:'Simple',status:'Awaiting Docs',score:45,officer:'D. Patel'},
-  {id:'NRCS-2026-00441',req:'B. Martinez / Individual',comp:'NRCS',desc:'Conservation easement contracts EQIP FY2022-2024',recv:'Apr 3',due:'Apr 29',days:3,track:'Simple',status:'In Review',score:38,officer:'S. Kim'},
-  {id:'AMS-2026-00301',req:'Food & Water Watch',comp:'AMS',desc:'Meat grading audit reports Q3 FY2025',recv:'Apr 11',due:'May 9',days:15,track:'Complex',status:'In Review',score:79,officer:'Unassigned'},
-  {id:'FSA-2026-04815',req:'R. Thompson / Individual',comp:'FSA',desc:'FSN parcel data for Champaign County IL',recv:'Apr 1',due:'Apr 27',days:1,track:'Simple',status:'Overdue',score:61,officer:'K. Johnson'},
-  {id:'APHIS-2026-01088',req:'Earthjustice',comp:'APHIS',desc:'Wildlife Services lethal control program records',recv:'Apr 2',due:'Apr 28',days:2,track:'Complex',status:'In Review',score:83,officer:'M. Torres'},
-  {id:'FSA-2026-04800',req:'Farm Aid / Advocacy',comp:'FSA',desc:'AFIDA foreign land ownership filings 2023-2025',recv:'Mar 28',due:'Apr 23',days:-5,track:'Simple',status:'Overdue',score:55,officer:'D. Patel'},
-  {id:'FNS-2026-00881',req:'USDA OIG (Internal)',comp:'FNS',desc:'WIC vendor audit records FY2024 Region 5',recv:'Apr 6',due:'May 4',days:10,track:'Complex',status:'In Review',score:66,officer:'K. Johnson'},
-  {id:'NRCS-2026-00438',req:'American Farmland Trust',comp:'NRCS',desc:'ACEP-ALE easement agreements by state FY2022',recv:'Mar 25',due:'Apr 20',days:-8,track:'Complex',status:'Overdue',score:74,officer:'S. Kim'},
-  {id:'RD-2026-00219',req:'Rural Community Assistance',comp:'RD',desc:'Rural housing loan approvals and denials FY2024',recv:'Apr 9',due:'May 7',days:13,track:'Simple',status:'Perfection',score:42,officer:'Unassigned'},
-  {id:'FSA-2026-04795',req:'ProPublica / Media',comp:'FSA',desc:'ARC-CO payment rates all counties FY2024',recv:'Mar 30',due:'Apr 25',days:-3,track:'Simple',status:'Closed',score:58,officer:'D. Patel'},
-  {id:'APHIS-2026-01075',req:'Humane Society',comp:'APHIS',desc:'Animal Welfare Act inspection reports 2024-2025',recv:'Mar 20',due:'Apr 15',days:-10,track:'Complex',status:'Closed',score:70,officer:'M. Torres'},
+  {id:'FNS-2026-00892',req:'Center on Budget & Policy Priorities',comp:'FNS',desc:'SNAP waivers issued during COVID-19 pandemic',recv:'Apr 5',due:'May 1',days:-2,track:'Complex',status:'Overdue',ai:'Complete',docs:189,officer:'K. Johnson'},
+  {id:'APHIS-2026-01103',req:'Environmental Working Group',comp:'APHIS',desc:'Pesticide residue inspection reports imported produce',recv:'Apr 8',due:'May 6',days:12,track:'Complex',status:'In Review',ai:'Complete',docs:312,officer:'M. Torres'},
+  {id:'APHIS-2026-01099',req:'New York Times / Media',comp:'APHIS',desc:'H5N1 avian flu inspection logs and enforcement actions',recv:'Apr 9',due:'May 7',days:13,track:'Complex',status:'In Review',ai:'Complete',docs:441,officer:'M. Torres'},
+  {id:'FSA-2026-04821',req:'A. Chen / Reuters',comp:'FSA',desc:'Farm loan payment records FY2024 by county',recv:'Apr 10',due:'May 8',days:14,track:'Simple',status:'In Review',ai:'Complete',docs:12,officer:'D. Patel'},
+  {id:'FSA-2026-04819',req:'J. Williams / Individual',comp:'FSA',desc:'Crop insurance payout data for Iowa FY2023',recv:'Apr 7',due:'May 5',days:11,track:'Simple',status:'Awaiting Docs',ai:'Complete',docs:8,officer:'D. Patel'},
+  {id:'NRCS-2026-00441',req:'B. Martinez / Individual',comp:'NRCS',desc:'Conservation easement contracts EQIP FY2022-2024',recv:'Apr 3',due:'Apr 29',days:3,track:'Simple',status:'In Review',ai:'Complete',docs:34,officer:'S. Kim'},
+  {id:'AMS-2026-00301',req:'Food & Water Watch',comp:'AMS',desc:'Meat grading audit reports Q3 FY2025',recv:'Apr 11',due:'May 9',days:15,track:'Complex',status:'In Review',ai:'Running',docs:0,officer:'Unassigned'},
+  {id:'FSA-2026-04815',req:'R. Thompson / Individual',comp:'FSA',desc:'FSN parcel data for Champaign County IL',recv:'Apr 1',due:'Apr 27',days:1,track:'Simple',status:'Overdue',ai:'Complete',docs:3,officer:'K. Johnson'},
+  {id:'APHIS-2026-01088',req:'Earthjustice',comp:'APHIS',desc:'Wildlife Services lethal control program records',recv:'Apr 2',due:'Apr 28',days:2,track:'Complex',status:'In Review',ai:'Complete',docs:278,officer:'M. Torres'},
+  {id:'FSA-2026-04800',req:'Farm Aid / Advocacy',comp:'FSA',desc:'AFIDA foreign land ownership filings 2023-2025',recv:'Mar 28',due:'Apr 23',days:-5,track:'Simple',status:'Overdue',ai:'Complete',docs:22,officer:'D. Patel'},
+  {id:'FNS-2026-00881',req:'USDA OIG (Internal)',comp:'FNS',desc:'WIC vendor audit records FY2024 Region 5',recv:'Apr 6',due:'May 4',days:10,track:'Complex',status:'In Review',ai:'Complete',docs:96,officer:'K. Johnson'},
+  {id:'NRCS-2026-00438',req:'American Farmland Trust',comp:'NRCS',desc:'ACEP-ALE easement agreements by state FY2022',recv:'Mar 25',due:'Apr 20',days:-8,track:'Complex',status:'Overdue',ai:'Complete',docs:61,officer:'S. Kim'},
+  {id:'RD-2026-00219',req:'Rural Community Assistance',comp:'RD',desc:'Rural housing loan approvals and denials FY2024',recv:'Apr 9',due:'May 7',days:13,track:'Simple',status:'Perfection',ai:'Complete',docs:18,officer:'Unassigned'},
+  {id:'FSA-2026-04795',req:'ProPublica / Media',comp:'FSA',desc:'ARC-CO payment rates all counties FY2024',recv:'Mar 30',due:'Apr 25',days:-3,track:'Simple',status:'Closed',ai:'Complete',docs:7,officer:'D. Patel'},
+  {id:'APHIS-2026-01075',req:'Humane Society',comp:'APHIS',desc:'Animal Welfare Act inspection reports 2024-2025',recv:'Mar 20',due:'Apr 15',days:-10,track:'Complex',status:'Closed',ai:'Complete',docs:204,officer:'M. Torres'},
 ];
 
 // ═══════════════════════════ NAV ═══════════════════════════
@@ -743,7 +950,7 @@ function nav(name) {
 // ═══════════════════════════ HELPERS ═══════════════════════════
 function badge(status){const m={'In Review':'b-g','Perfection':'b-o','Awaiting Docs':'b-b','Overdue':'b-r','Closed':'b-gr','AI Flagged':'b-p','Complex':'b-o','Simple':'b-b'};return m[status]||'b-gr';}
 function daysHtml(d){if(d<0)return`<span class="db">OVERDUE</span>`;if(d<=5)return`<span class="db">+${d}</span>`;if(d<=12)return`<span class="dw">+${d}</span>`;return`<span class="dok">+${d}</span>`;}
-function scoreColor(s){if(s>=85)return'#b91c1c';if(s>=65)return'#b45309';return'#15803d';}
+function aiBadge(ai){return ai==='Complete'?'<span class="b b-g">&#x2713; Ready</span>':ai==='Running'?'<span class="b b-b pulse">Running...</span>':'<span class="b b-gr">Queued</span>';}
 function fmt(n){return n.toLocaleString();}
 function toast(msg,type=''){const t=document.createElement('div');t.className='toast-i '+(type==='ok'?'ok':type==='err'?'err':'');t.textContent=msg;document.getElementById('toast').appendChild(t);setTimeout(()=>t.remove(),3000);}
 
@@ -752,14 +959,16 @@ function renderDash(){
   const fy=document.getElementById('dash-fy')||{value:'FY2024'};
   const d=D.annual.find(a=>a.fy===(fy.value||'FY2024'))||D.annual[2];
   const rate=Math.round(d.processed/d.received*100);
+  const overdue=CASES.filter(c=>c.days<0&&c.status!=='Closed').length;
+  const aiReady=CASES.filter(c=>c.ai==='Complete'&&c.status!=='Closed').length;
+  const pendingApproval=CASES.filter(c=>c.status==='In Review').length;
   document.getElementById('kpi-row').innerHTML=`
-    <div class="kc"><div class="kl">Requests Received</div><div class="kvr"><span class="kv">${fmt(d.received)}</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">${d.fy}</div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="0,22 25,20 50,18 75,14 100,10" fill="none" stroke="#f59e0b" stroke-width="1.5"/></svg></div>
-    <div class="kc"><div class="kl">Processed / Closed</div><div class="kvr"><span class="kv">${fmt(d.processed)}</span><span class="kbadge ${rate>=95?'kb-ok':'kb-w'}"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">${rate}% close rate</div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="0,24 25,22 50,18 75,14 100,12" fill="none" stroke="#3aab7b" stroke-width="1.5"/></svg></div>
-    <div class="kc"><div class="kl">End-of-FY Backlog</div><div class="kvr"><span class="kv">${fmt(d.backlog)}</span><span class="kbadge ${d.backlog<500?'kb-ok':d.backlog<1000?'kb-w':'kb-b'}"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="ks">Target &lt;500</div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="0,18 25,20 50,22 75,18 100,24" fill="none" stroke="#ef4444" stroke-width="1.5"/></svg></div>
-    <div class="kc"><div class="kl">Overdue Cases</div><div class="kvr"><span class="kv">247</span><span class="kbadge kb-b"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="ks">Past 21-day deadline</div></div>
-    <div class="kc"><div class="kl">Duplicates Flagged</div><div class="kvr"><span class="kv">312</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">AI auto-detected</div></div>
-    <div class="kc"><div class="kl">Avg Simple Days</div><div class="kvr"><span class="kv">17.4</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">HHS benchmark: 10</div></div>`;
-  drawCompChart();drawTrendChart();renderDashTable();
+    <div class="kc"><div class="kl">Overdue — Action Required</div><div class="kvr"><span class="kv">${overdue}</span><span class="kbadge kb-b"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="ks">Past 21-day statutory deadline</div></div>
+    <div class="kc"><div class="kl">AI Work Ready</div><div class="kvr"><span class="kv">${aiReady}</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">Records found · summary · redacted</div></div>
+    <div class="kc"><div class="kl">Pending Officer Review</div><div class="kvr"><span class="kv">${pendingApproval}</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">Routing approval needed</div></div>
+    <div class="kc"><div class="kl">Redaction Flags</div><div class="kvr"><span class="kv">70</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">PII + exemption review needed</div></div>
+    <div class="kc"><div class="kl">Cases Active</div><div class="kvr"><span class="kv">${CASES.filter(c=>c.status!=='Closed').length}</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">${CASES.filter(c=>c.status==='Closed').length} closed this period</div></div>`;
+  drawCompChart();renderActionQueue();renderDashTable();
 }
 function drawCompChart(){
   const el=document.getElementById('comp-chart');
@@ -776,21 +985,15 @@ function drawCompChart(){
   });
   el.innerHTML=html;
 }
-function drawTrendChart(){
-  const el=document.getElementById('trend-chart');
-  if(!el)return;
-  const pts=D.annual;const W=290,H=160,ox=35,oy=10,maxV=28000;
-  const x=(i)=>ox+i*(W/2);
-  const y=(v)=>oy+H-(v/maxV*H);
-  const recPts=pts.map((p,i)=>`${x(i)},${y(p.received)}`).join(' ');
-  const proPts=pts.map((p,i)=>`${x(i)},${y(p.processed)}`).join(' ');
-  let html=`<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy+H}" stroke="#e5e7eb" stroke-width="1"/>`;
-  [0,7000,14000,21000,28000].forEach(v=>{const yy=y(v);html+=`<line x1="${ox}" y1="${yy}" x2="${ox+W}" y2="${yy}" stroke="#f3f4f6" stroke-width="1"/>`;html+=`<text x="${ox-3}" y="${yy+4}" text-anchor="end" font-size="8.5" fill="#9ca3af">${v===0?'0':v/1000+'k'}</text>`;});
-  html+=`<polyline points="${recPts}" fill="none" stroke="#3aab7b" stroke-width="2.5" stroke-linejoin="round"/>`;
-  html+=`<polyline points="${proPts}" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
-  pts.forEach((p,i)=>{html+=`<circle cx="${x(i)}" cy="${y(p.received)}" r="4" fill="#3aab7b"/>`;html+=`<text x="${x(i)}" y="${oy+H+14}" text-anchor="middle" font-size="9" fill="#9ca3af">${p.fy}</text>`;});
-  html+=`<text x="${ox+4}" y="${oy+14}" font-size="9" fill="#3aab7b">● Received</text><text x="${ox+4}" y="${oy+26}" font-size="9" fill="#93c5fd">● Processed</text>`;
-  el.innerHTML=html;
+function renderActionQueue(){
+  const el=document.getElementById('action-queue');if(!el)return;
+  const actions=[
+    ...CASES.filter(c=>c.days<0&&c.status!=='Closed').map(c=>({dot:'#ef4444',txt:`<b>${c.id}</b> — ${c.desc}`,sub:`OVERDUE · ${c.comp} · ${c.officer}`,id:c.id})),
+    ...CASES.filter(c=>c.status==='In Review'&&c.days>=0&&c.days<=5).map(c=>({dot:'#f59e0b',txt:`<b>${c.id}</b> — Routing approval needed`,sub:`Due in ${c.days}d · ${c.comp} · ${c.officer}`,id:c.id})),
+    ...CASES.filter(c=>c.ai==='Running').map(c=>({dot:'#93c5fd',txt:`<b>${c.id}</b> — AI agent processing`,sub:`Records search in progress · ${c.comp}`,id:c.id})),
+    ...CASES.filter(c=>c.status==='Perfection').map(c=>({dot:'#f59e0b',txt:`<b>${c.id}</b> — Perfection required`,sub:`Awaiting requester · ${c.comp} · ${c.officer}`,id:c.id})),
+  ].slice(0,7);
+  el.innerHTML=actions.length?actions.map(a=>`<div class="aq-item" onclick="openCase('${a.id}')"><div class="aq-dot" style="background:${a.dot}"></div><div><div class="aq-txt">${a.txt}</div><div class="aq-sub">${a.sub}</div></div></div>`).join('')+'<div style="padding:8px 12px;font-size:10px;color:var(--blue);cursor:pointer;text-align:right" onclick="nav(\'work\')">View all cases →</div>':'<div style="padding:20px;text-align:center;font-size:11px;color:var(--t2)">No immediate actions required</div>';
 }
 function renderDashTable(){
   const t=document.getElementById('dash-table');
@@ -802,7 +1005,7 @@ function renderDashTable(){
       <td>${daysHtml(c.days)}</td>
       <td><span class="b ${badge(c.track)}">${c.track}</span></td>
       <td><span class="b ${badge(c.status)}">${c.status}</span></td>
-      <td><b style="color:${scoreColor(c.score)}">${c.score}</b></td>
+      <td>${aiBadge(c.ai)}${c.docs?` <span style="font-size:9px;color:var(--t3)">${c.docs}d</span>`:''}</td>
     </tr>`).join('');
 }
 
@@ -820,7 +1023,7 @@ function renderWork(){
       <td>${daysHtml(c.days)}</td>
       <td><span class="b ${badge(c.track)}">${c.track}</span></td>
       <td><span class="b ${badge(c.status)}">${c.status}</span></td>
-      <td><b style="color:${scoreColor(c.score)}">${c.score}</b></td>
+      <td>${aiBadge(c.ai)}${c.docs?` <span style="font-size:9px;color:var(--t3)">${c.docs}d</span>`:''}</td>
       <td>${c.officer}</td>
     </tr>`).join('');
 }
@@ -855,19 +1058,32 @@ function openCase(id){
   document.getElementById('cd-due2').textContent=c.due+', 2026';
   document.getElementById('case-due').textContent=c.due+', 2026';
   document.getElementById('case-days-left').textContent=c.days>0?`${c.days} business days remaining`:'OVERDUE';
-  document.getElementById('case-score').textContent=c.score;
-  document.getElementById('case-score-bar').style.width=c.score+'%';
-  document.getElementById('case-track-label').textContent=c.score>=85?'HIGH — Complex Track':c.score>=65?'ELEVATED — Complex Track':'STANDARD — '+c.track+' Track';
-  document.getElementById('case-routing').textContent=c.comp+' — FOIA Office';
+  const clk=document.getElementById('case-clock');
+  if(clk){clk.style.background=c.days<0?'#fee2e2':'#fef3c7';clk.style.borderColor=c.days<0?'#fca5a5':'#fcd34d';}
   const s=document.getElementById('cd-status');s.className='b '+badge(c.status);s.textContent=c.status;
   const tr=document.getElementById('cd-track');tr.className='b '+badge(c.track);tr.textContent=c.track;
+  const ragDocs=document.getElementById('rag-docs');if(ragDocs)ragDocs.textContent=c.docs?`${c.docs} docs found`:'Searching...';
+  const ragRout=document.getElementById('rag-routing');if(ragRout)ragRout.textContent=c.comp;
+  const recTotal=document.getElementById('rec-total');if(recTotal)recTotal.textContent=`${c.docs||0} documents`;
+  const tabCount=document.getElementById('tab-rec-count');if(tabCount)tabCount.textContent=c.docs||0;
   caseTab('summary',document.querySelector('#case-tabs .dt'));
   nav('case');
 }
 function caseTab(name,el){
-  document.querySelectorAll('.dt').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('#case-tabs .dt').forEach(t=>t.classList.remove('on'));
   if(el)el.classList.add('on');
-  ['summary','docs','log','assign','appeal'].forEach(t=>{const d=document.getElementById('tab-'+t);if(d)d.style.display=t===name?'':'none';});
+  ['summary','records','aisummary','redaction','workflow','log','appeal'].forEach(t=>{const d=document.getElementById('tab-'+t);if(d)d.style.display=t===name?'':'none';});
+}
+function approveRouting(){
+  toast('Routing approved — case assigned to component FOIA office','ok');
+  const dot=document.getElementById('wf-dot-3');const lbl=document.getElementById('wf-lbl-3');
+  if(dot){dot.className='wf-dot done';dot.innerHTML='&#10003;';}
+  if(lbl){lbl.className='wf-lbl done';}
+}
+function draftResponse(){toast('Opening AI-assisted response draft editor...','ok');}
+function filterRecords(q){
+  const rows=document.querySelectorAll('#rec-list .rr');
+  rows.forEach(r=>{r.style.display=q&&!r.textContent.toLowerCase().includes(q.toLowerCase())?'none':'';});
 }
 function closeCase(){toast('Case marked closed and removed from queue','ok');nav('work');}
 function simUpload(){toast('Document uploaded — queued for AI redaction pass','ok');}
@@ -1034,21 +1250,19 @@ function showAIResult(){
   document.getElementById('ai-loading').style.display='none';
   document.getElementById('ai-result').style.display='block';
   document.getElementById('wiz3-footer').style.display='flex';
-  const desc=(document.getElementById('in-desc')||{value:''}).value.toLowerCase();
-  const score=desc.includes('all')||desc.includes('any')||desc.includes('report')?Math.floor(70+Math.random()*20):Math.floor(30+Math.random()*40);
   const comp=(document.getElementById('in-comp')||{value:'FSA'}).value;
-  document.getElementById('new-score').textContent=score;
-  document.getElementById('new-score-bar').style.width=score+'%';
-  document.getElementById('new-track').textContent=score>=65?'HIGH — Complex Track':'STANDARD — Simple Track';
   document.getElementById('new-routing').textContent=comp+' — FOIA Office';
   document.getElementById('new-conf').textContent='Confidence: '+(80+Math.floor(Math.random()*15))+'%';
+  document.getElementById('new-track').textContent='✓ Routing confirmed';
   document.getElementById('new-dup').textContent='No duplicates found';
+  const agentStatus=document.getElementById('new-agent-status');
+  if(agentStatus)agentStatus.textContent='Will begin on case creation';
 }
 function createCase(){
   closeModal();
   const name=(document.getElementById('in-name')||{value:'New Requester'}).value||'New Requester';
   const comp=(document.getElementById('in-comp')||{value:'FSA'}).value;
-  const newCase={id:comp+'-2026-'+String(Math.floor(Math.random()*9000+1000)),req:name,comp,desc:'New intake request',recv:'Apr 17',due:'May 15',days:18,track:'Simple',status:'In Review',score:45,officer:'Unassigned'};
+  const newCase={id:comp+'-2026-'+String(Math.floor(Math.random()*9000+1000)),req:name,comp,desc:'New intake request',recv:'Apr 17',due:'May 15',days:18,track:'Simple',status:'In Review',ai:'Running',docs:0,officer:'Unassigned'};
   CASES.unshift(newCase);
   toast(`Case ${newCase.id} created and assigned for review`,'ok');
   nav('work');
