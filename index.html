@@ -3,982 +3,1067 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C3 AI FOIA Management — Wireframes</title>
+<title>C3 AI FOIA Management</title>
 <style>
-  :root {
-    --sidebar-bg: #1a2535;
-    --sidebar-w: 72px;
-    --filter-w: 220px;
-    --green: #3aab7b;
-    --green-light: #e8f7f1;
-    --blue: #2563eb;
-    --blue-light: #eff6ff;
-    --red: #ef4444;
-    --orange: #f59e0b;
-    --navy: #1a2535;
-    --text: #111827;
-    --text-2: #6b7280;
-    --text-3: #9ca3af;
-    --border: #e5e7eb;
-    --bg: #f8f9fa;
-    --white: #ffffff;
-    --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; display: flex; height: 100vh; overflow: hidden; }
-
-  /* ── SIDEBAR ── */
-  .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 4px; flex-shrink: 0; z-index: 10; }
-  .sidebar-logo { width: 40px; height: 40px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
-  .sidebar-logo svg { width: 22px; height: 22px; fill: white; }
-  .nav-item { width: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 8px; cursor: pointer; color: #8899aa; transition: all .15s; }
-  .nav-item:hover { background: rgba(255,255,255,0.08); color: #cdd5e0; }
-  .nav-item.active { background: rgba(58,171,123,0.15); color: var(--green); }
-  .nav-item svg { width: 20px; height: 20px; }
-  .nav-item span { font-size: 9.5px; font-weight: 500; text-align: center; line-height: 1.2; }
-  .nav-spacer { flex: 1; }
-
-  /* ── MAIN SHELL ── */
-  .shell { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar { height: 48px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 0; flex-shrink: 0; }
-  .app-title { font-size: 15px; font-weight: 600; color: var(--text); margin-right: 32px; }
-  .tab { padding: 0 16px; height: 48px; display: flex; align-items: center; font-size: 13px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; }
-  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-  .tab:hover:not(.active) { color: var(--text); }
-  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-  .select-pill { border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 12px; background: white; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--text); }
-  .select-pill svg { width: 14px; height: 14px; color: var(--text-2); }
-
-  /* ── CONTENT AREA ── */
-  .content-area { flex: 1; display: flex; overflow: hidden; }
-
-  /* ── FILTER PANEL ── */
-  .filter-panel { width: var(--filter-w); background: var(--white); border-right: 1px solid var(--border); padding: 16px 14px; overflow-y: auto; flex-shrink: 0; }
-  .filter-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .filter-panel-header span { font-size: 14px; font-weight: 600; }
-  .filter-section { margin-bottom: 16px; }
-  .filter-section-label { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-  .filter-section-label a { font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; text-transform: none; letter-spacing: 0; }
-  .filter-label { font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 4px; margin-top: 8px; }
-  .filter-select { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; background: white; color: var(--text); display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-  .filter-select svg { width: 12px; height: 12px; color: var(--text-3); }
-  .filter-actions { display: flex; gap: 8px; margin-top: 16px; }
-  .btn-primary { background: var(--blue); color: white; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
-  .btn-ghost { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; font-size: 12px; color: var(--text-2); cursor: pointer; }
-  .btn-green { background: var(--green); color: white; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
-  .btn-red { background: var(--red); color: white; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
-
-  /* ── MAIN CONTENT ── */
-  .main { flex: 1; overflow-y: auto; padding: 20px; }
-
-  /* ── KPI CARDS ── */
-  .kpi-row { display: flex; gap: 12px; margin-bottom: 20px; overflow-x: auto; }
-  .kpi-card { flex: 1; min-width: 140px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: var(--card-shadow); }
-  .kpi-label { font-size: 10px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .kpi-value-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-  .kpi-value { font-size: 22px; font-weight: 700; color: var(--text); }
-  .kpi-badge { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  .kpi-badge.ok { background: #dcfce7; }
-  .kpi-badge.ok svg { width: 10px; height: 10px; fill: #16a34a; }
-  .kpi-badge.warn { background: #fef9c3; }
-  .kpi-badge.warn svg { width: 10px; height: 10px; fill: #ca8a04; }
-  .kpi-badge.bad { background: #fee2e2; }
-  .kpi-badge.bad svg { width: 10px; height: 10px; fill: #dc2626; }
-  .kpi-date { font-size: 10px; color: var(--text-3); }
-
-  /* ── CHART CARDS ── */
-  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .chart-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; box-shadow: var(--card-shadow); }
-  .chart-card.full { grid-column: 1 / -1; }
-  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-  .chart-subtitle { font-size: 11px; color: var(--text-2); margin-bottom: 14px; }
-  .chart-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-  .chart-select { border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 11px; background: white; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-  .chart-select .x-btn { color: var(--text-3); font-size: 10px; cursor: pointer; }
-  .legend { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-2); }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .legend-line { width: 16px; height: 2px; }
-
-  /* ── TABLE ── */
-  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); overflow: hidden; }
-  .table-header { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-  .table-title { font-size: 13px; font-weight: 600; }
-  .table-actions { display: flex; gap: 8px; align-items: center; }
-  .search-input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 12px; width: 200px; outline: none; }
-  table { width: 100%; border-collapse: collapse; }
-  thead th { background: #f9fafb; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; }
-  tbody tr:hover { background: #f9fafb; }
-  tbody tr:last-child { border-bottom: none; }
-  tbody td { padding: 10px 14px; font-size: 12px; color: var(--text); white-space: nowrap; }
-
-  /* ── BADGES ── */
-  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; white-space: nowrap; }
-  .badge-green { background: #dcfce7; color: #15803d; }
-  .badge-blue { background: #dbeafe; color: #1d4ed8; }
-  .badge-orange { background: #fef3c7; color: #b45309; }
-  .badge-red { background: #fee2e2; color: #b91c1c; }
-  .badge-gray { background: #f3f4f6; color: #4b5563; }
-  .badge-purple { background: #ede9fe; color: #6d28d9; }
-
-  /* ── DAYS PILL ── */
-  .days-ok { color: #15803d; font-weight: 600; }
-  .days-warn { color: #b45309; font-weight: 600; }
-  .days-bad { color: #b91c1c; font-weight: 600; }
-
-  /* ── SCREEN VISIBILITY ── */
-  .screen { display: none; }
-  .screen.active { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-
-  /* ── CASE DETAIL TABS ── */
-  .detail-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-  .detail-tab { padding: 8px 16px; font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; }
-  .detail-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-
-  /* ── FORM GRID ── */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 4px; }
-  .form-group.full { grid-column: 1 / -1; }
-  .form-label { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
-  .form-value { font-size: 13px; color: var(--text); padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: #fafafa; }
-  .form-value.editable { background: white; }
-  .form-textarea { font-size: 12px; color: var(--text); padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: white; min-height: 80px; resize: vertical; width: 100%; }
-
-  /* ── AI CARD ── */
-  .ai-card { background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
-  .ai-card-title { font-size: 11px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-  .score-bar-wrap { background: #e5e7eb; border-radius: 99px; height: 8px; margin: 6px 0; overflow: hidden; }
-  .score-bar { height: 8px; border-radius: 99px; background: var(--green); }
-
-  /* ── CLOCK BANNER ── */
-  .clock-banner { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-  .clock-banner-text { font-size: 12px; font-weight: 600; color: #92400e; display: flex; align-items: center; gap: 8px; }
-
-  /* ── SEARCH SCREEN ── */
-  .search-hero { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 16px; box-shadow: var(--card-shadow); }
-  .search-bar { display: flex; gap: 10px; align-items: center; }
-  .search-input-lg { flex: 1; border: 2px solid var(--blue); border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; }
-  .search-btn { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; }
-  .search-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .search-tag { background: var(--blue-light); color: var(--blue); border-radius: 12px; padding: 3px 10px; font-size: 11px; font-weight: 500; cursor: pointer; }
-  .result-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 10px; box-shadow: var(--card-shadow); cursor: pointer; }
-  .result-card:hover { border-color: var(--blue); }
-  .result-title { font-size: 13px; font-weight: 600; color: var(--blue); margin-bottom: 4px; }
-  .result-meta { font-size: 11px; color: var(--text-2); margin-bottom: 6px; }
-  .result-snippet { font-size: 12px; color: var(--text); line-height: 1.5; }
-  .result-snippet mark { background: #fef9c3; padding: 0 2px; }
-
-  /* ── DOC ITEM ── */
-  .doc-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
-  .doc-row:last-child { border-bottom: none; }
-  .doc-icon { width: 32px; height: 32px; border-radius: 6px; background: #dbeafe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .doc-icon svg { width: 16px; height: 16px; fill: var(--blue); }
-  .doc-info { flex: 1; }
-  .doc-name { font-size: 12px; font-weight: 600; color: var(--text); }
-  .doc-meta { font-size: 11px; color: var(--text-2); }
-
-  /* ── AUDIT LOG ── */
-  .log-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
-  .log-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-top: 4px; flex-shrink: 0; }
-  .log-text { font-size: 12px; color: var(--text); }
-  .log-time { font-size: 11px; color: var(--text-3); margin-top: 2px; }
-
-  /* ── ANALYTICS SPECIFIC ── */
-  .stat-row { display: flex; gap: 12px; margin-bottom: 4px; align-items: center; }
-  .stat-bar-label { font-size: 11px; color: var(--text-2); width: 90px; text-align: right; flex-shrink: 0; }
-  .stat-bar-track { flex: 1; background: #f3f4f6; border-radius: 3px; height: 18px; overflow: hidden; position: relative; }
-  .stat-bar-fill { height: 100%; border-radius: 3px; background: var(--green); display: flex; align-items: center; padding-left: 6px; }
-  .stat-bar-fill.red { background: #fca5a5; }
-  .stat-bar-val { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 600; color: var(--text); }
-  .threshold-line { position: absolute; width: 2px; background: #6366f1; top: 0; bottom: 0; }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+:root{--sb:#1a2535;--green:#3aab7b;--green-l:#e8f7f1;--blue:#2563eb;--blue-l:#eff6ff;--red:#ef4444;--orange:#f59e0b;--purple:#7c3aed;--navy:#1a2535;--t1:#111827;--t2:#6b7280;--t3:#9ca3af;--bd:#e5e7eb;--bg:#f3f4f6;--wh:#fff;--sh:0 1px 3px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;display:flex;height:100vh;overflow:hidden;}
+/* SIDEBAR */
+.sb{width:68px;background:var(--sb);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:2px;flex-shrink:0;z-index:20;}
+.sb-logo{width:38px;height:38px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.sb-logo svg{width:20px;height:20px;fill:white;}
+.ni{width:54px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:8px;cursor:pointer;color:#7a8fa6;transition:all .15s;}
+.ni:hover{background:rgba(255,255,255,.07);color:#c0cdd9;}
+.ni.on{background:rgba(58,171,123,.15);color:var(--green);}
+.ni svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;}
+.ni span{font-size:9px;font-weight:500;text-align:center;line-height:1.1;}
+.ni-sp{flex:1;}
+/* SHELL */
+.shell{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:46px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 18px;flex-shrink:0;}
+.app-title{font-size:14px;font-weight:700;color:var(--t1);margin-right:28px;white-space:nowrap;}
+.tab{padding:0 14px;height:46px;display:flex;align-items:center;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.tab:hover:not(.on){color:var(--t1);}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.pill{border:1px solid var(--bd);border-radius:6px;padding:5px 9px;font-size:11px;background:var(--wh);cursor:pointer;display:flex;align-items:center;gap:5px;color:var(--t1);white-space:nowrap;}
+.pill svg{width:12px;height:12px;stroke:var(--t3);fill:none;stroke-width:2;}
+/* CONTENT */
+.ca{flex:1;display:flex;overflow:hidden;}
+/* FILTER PANEL */
+.fp{width:210px;background:var(--wh);border-right:1px solid var(--bd);padding:14px 12px;overflow-y:auto;flex-shrink:0;}
+.fp-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.fp-hdr b{font-size:13px;font-weight:600;}
+.fs{margin-bottom:14px;}
+.fs-lbl{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.fs-lbl a{font-size:10px;font-weight:500;color:var(--blue);text-transform:none;letter-spacing:0;cursor:pointer;}
+.fl{font-size:10px;color:var(--t2);margin-bottom:3px;margin-top:6px;}
+.fsel{width:100%;border:1px solid var(--bd);border-radius:5px;padding:5px 7px;font-size:11px;background:var(--wh);color:var(--t1);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.fsel svg{width:11px;height:11px;stroke:var(--t3);fill:none;stroke-width:2;}
+.fsel select{width:100%;border:none;background:none;font-size:11px;color:var(--t1);outline:none;cursor:pointer;appearance:none;}
+.fa{display:flex;gap:7px;margin-top:14px;}
+/* BUTTONS */
+.btn{border:none;border-radius:5px;padding:6px 13px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-p{background:var(--blue);color:var(--wh);}
+.btn-g{background:var(--green);color:var(--wh);}
+.btn-r{background:var(--red);color:var(--wh);}
+.btn-o{background:var(--orange);color:var(--wh);}
+.btn-gh{background:none;border:1px solid var(--bd);color:var(--t2);}
+.btn-sm{padding:4px 9px;font-size:10px;}
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:18px;}
+/* KPI */
+.krow{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.kc{flex:1;min-width:130px;background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:12px;box-shadow:var(--sh);}
+.kl{font-size:9.5px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.kv{font-size:22px;font-weight:700;color:var(--t1);}
+.kvr{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.kbadge{width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kbadge svg{width:9px;height:9px;}
+.kb-ok{background:#dcfce7;}.kb-ok svg{fill:#16a34a;}
+.kb-w{background:#fef9c3;}.kb-w svg{fill:#ca8a04;}
+.kb-b{background:#fee2e2;}.kb-b svg{fill:#dc2626;}
+.ks{font-size:10px;color:var(--t3);}
+/* CARDS */
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:15px;box-shadow:var(--sh);}
+.card-title{font-size:12px;font-weight:600;margin-bottom:2px;}
+.card-sub{font-size:10px;color:var(--t2);margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid2.full{grid-column:1/-1;}
+/* TABLE */
+.tc{background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:var(--sh);overflow:hidden;}
+.th{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);}
+.th b{font-size:12px;}
+.th-acts{display:flex;gap:7px;align-items:center;}
+.si{border:1px solid var(--bd);border-radius:5px;padding:5px 9px;font-size:11px;width:190px;outline:none;color:var(--t1);}
+table{width:100%;border-collapse:collapse;}
+thead th{background:#f9fafb;padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--bd);white-space:nowrap;cursor:pointer;user-select:none;}
+thead th:hover{background:#f3f4f6;}
+tbody tr{border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s;}
+tbody tr:hover{background:#f9fafb;}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:9px 12px;font-size:11px;color:var(--t1);white-space:nowrap;}
+/* BADGES */
+.b{display:inline-flex;align-items:center;padding:2px 7px;border-radius:10px;font-size:9.5px;font-weight:600;white-space:nowrap;}
+.b-g{background:#dcfce7;color:#15803d;}
+.b-b{background:#dbeafe;color:#1d4ed8;}
+.b-o{background:#fef3c7;color:#b45309;}
+.b-r{background:#fee2e2;color:#b91c1c;}
+.b-gr{background:#f3f4f6;color:#4b5563;}
+.b-p{background:#ede9fe;color:#6d28d9;}
+.b-t{background:#e0f2fe;color:#0369a1;}
+/* DAYS */
+.dok{color:#15803d;font-weight:700;}
+.dw{color:#b45309;font-weight:700;}
+.db{color:#b91c1c;font-weight:700;}
+/* SCREENS */
+.scr{display:none;flex-direction:column;height:100%;overflow:hidden;}
+.scr.on{display:flex;}
+/* AI CARD */
+.ai-c{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:12px;}
+.ai-ttl{font-size:10px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.sbar{background:#e5e7eb;border-radius:99px;height:7px;margin:4px 0;overflow:hidden;}
+.sbar-f{height:7px;border-radius:99px;background:var(--green);transition:width .6s ease;}
+/* CLOCK BANNER */
+.clk{background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:9px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.clk-t{font-size:11px;font-weight:600;color:#92400e;display:flex;align-items:center;gap:7px;}
+.clk-t svg{stroke:#92400e;fill:none;stroke-width:2;width:14px;height:14px;}
+/* TABS */
+.dtabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:14px;}
+.dt{padding:7px 14px;font-size:11px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;}
+.dt.on{color:var(--blue);border-bottom-color:var(--blue);}
+/* FORM */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.fg{display:flex;flex-direction:column;gap:3px;}
+.fg.full{grid-column:1/-1;}
+.flbl{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;}
+.fval{font-size:12px;color:var(--t1);padding:6px 9px;border:1px solid var(--bd);border-radius:5px;background:#fafafa;}
+.fval.e{background:var(--wh);}
+textarea.fval{min-height:70px;resize:vertical;width:100%;font-family:inherit;font-size:12px;}
+input.fval{width:100%;font-family:inherit;}
+select.fval{width:100%;font-family:inherit;cursor:pointer;appearance:none;}
+/* LOG */
+.log-i{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid #f3f4f6;}
+.log-d{width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0;}
+.log-t{font-size:11px;color:var(--t1);}
+.log-s{font-size:10px;color:var(--t3);margin-top:1px;}
+/* DOC ROW */
+.dr{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--bd);}
+.dr:last-child{border-bottom:none;}
+.di{width:30px;height:30px;border-radius:5px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.di svg{width:15px;height:15px;fill:var(--blue);}
+.dn{font-size:11px;font-weight:600;color:var(--t1);}
+.dm{font-size:10px;color:var(--t2);}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;}
+.overlay.on{display:flex;}
+.modal{background:var(--wh);border-radius:10px;padding:22px;width:440px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{cursor:pointer;color:var(--t3);font-size:18px;line-height:1;}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--bd);}
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:8px;}
+.toast-i{background:#1a2535;color:white;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:slideUp .2s ease;}
+.toast-i.ok{background:#15803d;}
+.toast-i.err{background:#b91c1c;}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+/* SEARCH */
+.srch-hero{background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:20px;margin-bottom:14px;box-shadow:var(--sh);}
+.srch-bar{display:flex;gap:8px;}
+.srch-in{flex:1;border:2px solid var(--blue);border-radius:6px;padding:9px 12px;font-size:13px;outline:none;}
+.srch-tag{background:var(--blue-l);color:var(--blue);border-radius:10px;padding:3px 9px;font-size:10px;font-weight:500;cursor:pointer;}
+.rc{background:var(--wh);border:1px solid var(--bd);border-radius:7px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.rc:hover{border-color:var(--blue);}
+.rc-ttl{font-size:12px;font-weight:600;color:var(--blue);margin-bottom:3px;}
+.rc-m{font-size:10px;color:var(--t2);margin-bottom:5px;}
+.rc-s{font-size:11px;color:var(--t1);line-height:1.5;}
+.rc-s mark{background:#fef9c3;padding:0 2px;}
+/* INTAKE WIZARD */
+.wiz-step{display:none;}.wiz-step.on{display:block;}
+.wiz-prog{display:flex;gap:0;margin-bottom:20px;align-items:center;}
+.wiz-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:#e5e7eb;color:var(--t2);position:relative;z-index:1;}
+.wiz-dot.on{background:var(--blue);color:white;}
+.wiz-dot.done{background:var(--green);color:white;}
+.wiz-line{flex:1;height:2px;background:#e5e7eb;}
+.wiz-line.done{background:var(--green);}
+/* DATASET CARD */
+.ds-card{background:var(--wh);border:1px solid var(--bd);border-radius:7px;padding:12px;margin-bottom:8px;}
+.ds-ttl{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.ds-m{font-size:10px;color:var(--t2);margin-bottom:6px;}
+.ds-desc{font-size:11px;color:var(--t1);line-height:1.5;margin-bottom:6px;}
+/* SCORE RING */
+.ring-wrap{display:flex;align-items:center;gap:14px;}
+.score-label{font-size:28px;font-weight:800;}
+/* STAT BAR */
+.sbar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.sbar-lbl{font-size:10px;color:var(--t2);width:80px;text-align:right;flex-shrink:0;}
+.sbar-track{flex:1;background:#f3f4f6;border-radius:3px;height:16px;overflow:hidden;position:relative;}
+.sbar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:5px;}
+.sbar-val{font-size:9px;font-weight:600;color:white;}
+.sbar-fill.bad{background:#fca5a5;}
+.sbar-fill.ok{background:var(--green);}
+.sbar-fill.mid{background:#93c5fd;}
+/* NOTIF BADGE */
+.notif{position:absolute;top:-3px;right:-3px;background:var(--red);color:white;border-radius:50%;width:14px;height:14px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+/* PROGRESS ANIMATED */
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.pulse{animation:pulse 1.5s infinite;}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════ SIDEBAR ════════════════════════════════ -->
-<div class="sidebar">
-  <div class="sidebar-logo">
-    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-  </div>
-
-  <div class="nav-item active" onclick="showScreen('dashboard')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-    <span>Dashboard</span>
-  </div>
-  <div class="nav-item" onclick="showScreen('workload')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-    <span>Workload</span>
-  </div>
-  <div class="nav-item" onclick="showScreen('casedetail')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    <span>Cases</span>
-  </div>
-  <div class="nav-item" onclick="showScreen('search')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <span>Search</span>
-  </div>
-  <div class="nav-item" onclick="showScreen('analytics')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    <span>Analytics</span>
-  </div>
-  <div class="nav-item" onclick="showScreen('ai')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>
-    <span>AI Hub</span>
-  </div>
-  <div class="nav-spacer"></div>
-  <div class="nav-item" onclick="showScreen('admin')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12h2M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41"/></svg>
-    <span>Admin</span>
-  </div>
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-logo"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+  <div class="ni on" onclick="nav('dash')" id="ni-dash"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Dashboard</span></div>
+  <div class="ni" onclick="nav('work')" id="ni-work"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><span>Workload</span></div>
+  <div class="ni" onclick="nav('case')" id="ni-case" style="position:relative"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Cases</span></div>
+  <div class="ni" onclick="nav('search')" id="ni-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></div>
+  <div class="ni" onclick="nav('analytics')" id="ni-analytics"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Analytics</span></div>
+  <div class="ni" onclick="nav('ai')" id="ni-ai"><svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span>AI Hub</span></div>
+  <div class="ni-sp"></div>
+  <div class="ni" onclick="nav('admin')" id="ni-admin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span>Admin</span></div>
 </div>
 
-<!-- ════════════════════════════ SCREEN: DASHBOARD ════════════════════════════ -->
-<div class="screen active" id="screen-dashboard">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">Overview</div>
-      <div class="tab" onclick="showScreen('analytics')">Analytics</div>
-      <div class="topbar-right">
-        <div class="select-pill">FY 2026 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="select-pill">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-      </div>
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div class="scr on" id="scr-dash">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on">Overview</div>
+  <div class="tab" onclick="nav('analytics')">Analytics</div>
+  <div class="tb-r">
+    <div class="pill">FY 2024 <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <button class="btn btn-p btn-sm" onclick="openModal('intake')">+ New Request</button>
+  </div>
+</div>
+<div class="ca">
+  <div class="fp">
+    <div class="fp-hdr"><b>Filter</b></div>
+    <div class="fs"><div class="fs-lbl">Component <a onclick="resetFilter()">Clear</a></div>
+      <div class="fsel"><select id="dash-comp" onchange="updateDashFilter()"><option value="">All Components</option><option>FSA</option><option>APHIS</option><option>FNS</option><option>NRCS</option><option>RD</option><option>ARS</option><option>AMS</option></select></div>
     </div>
-    <div class="content-area">
-      <!-- Filter Panel -->
-      <div class="filter-panel">
-        <div class="filter-panel-header"><span>Filter</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
-        <div class="filter-section">
-          <div class="filter-section-label">Component <a href="#">Clear</a></div>
-          <div class="filter-label">Agency</div>
-          <div class="filter-select">Select <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-          <div class="filter-label">Mission Area</div>
-          <div class="filter-select">Select <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Date Range <a href="#">Clear</a></div>
-          <div class="filter-label">From</div>
-          <div class="filter-select">Oct 1, 2025 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-          <div class="filter-label">To</div>
-          <div class="filter-select">Today <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Track Type</div>
-          <div class="filter-select">All Tracks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-actions">
-          <button class="btn-primary">Filter</button>
-          <button class="btn-ghost">Clear all</button>
-        </div>
-      </div>
-
-      <!-- Main Dashboard -->
-      <div class="main">
-        <!-- KPI Row -->
-        <div class="kpi-row">
-          <div class="kpi-card">
-            <div class="kpi-label">Requests Received</div>
-            <div class="kpi-value-row"><span class="kpi-value">8,241</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div>
-            <div class="kpi-date">Oct 1 — Today</div>
-            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,25 15,22 30,20 45,18 60,15 75,17 90,13 105,10 120,12" fill="none" stroke="#f59e0b" stroke-width="1.5"/><path d="M0,25 15,22 30,20 45,18 60,15 75,17 90,13 105,10 120,12 120,30 0,30Z" fill="rgba(245,158,11,0.08)"/></svg>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Closed / Processed</div>
-            <div class="kpi-value-row"><span class="kpi-value">7,108</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
-            <div class="kpi-date">86.3% close rate</div>
-            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,28 15,25 30,22 45,20 60,17 75,15 90,12 105,10 120,9" fill="none" stroke="#3aab7b" stroke-width="1.5"/><path d="M0,28 15,25 30,22 45,20 60,17 75,15 90,12 105,10 120,9 120,30 0,30Z" fill="rgba(58,171,123,0.08)"/></svg>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Active Backlog</div>
-            <div class="kpi-value-row"><span class="kpi-value">1,133</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div>
-            <div class="kpi-date">Target: &lt;500</div>
-            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,10 15,12 30,14 45,13 60,16 75,15 90,18 105,17 120,19" fill="none" stroke="#f59e0b" stroke-width="1.5"/><path d="M0,10 15,12 30,14 45,13 60,16 75,15 90,18 105,17 120,19 120,30 0,30Z" fill="rgba(245,158,11,0.08)"/></svg>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Overdue Requests</div>
-            <div class="kpi-value-row"><span class="kpi-value">247</span><span class="kpi-badge bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div>
-            <div class="kpi-date">Past 21-day deadline</div>
-            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,22 15,20 30,18 45,20 60,16 75,18 90,14 105,16 120,13" fill="none" stroke="#ef4444" stroke-width="1.5"/><path d="M0,22 15,20 30,18 45,20 60,16 75,18 90,14 105,16 120,13 120,30 0,30Z" fill="rgba(239,68,68,0.08)"/></svg>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Avg. Processing Days</div>
-            <div class="kpi-value-row"><span class="kpi-value">17.4</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
-            <div class="kpi-date">Simple track</div>
-            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,20 15,18 30,16 45,15 60,13 75,14 90,12 105,11 120,10" fill="none" stroke="#3aab7b" stroke-width="1.5"/><path d="M0,20 15,18 30,16 45,15 60,13 75,14 90,12 105,11 120,10 120,30 0,30Z" fill="rgba(58,171,123,0.08)"/></svg>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Duplicates Flagged</div>
-            <div class="kpi-value-row"><span class="kpi-value">312</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
-            <div class="kpi-date">AI auto-detected</div>
-            <svg width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="0,28 15,26 30,22 45,19 60,15 75,12 90,10 105,8 120,7" fill="none" stroke="#3aab7b" stroke-width="1.5"/><path d="M0,28 15,26 30,22 45,19 60,15 75,12 90,10 105,8 120,7 120,30 0,30Z" fill="rgba(58,171,123,0.08)"/></svg>
-          </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="chart-row">
-          <div class="chart-card">
-            <div class="chart-title">Request Volume by Component</div>
-            <div class="chart-subtitle">FY2026 YTD — received vs. closed</div>
-            <svg width="100%" height="180" viewBox="0 0 360 180">
-              <!-- bars -->
-              <g transform="translate(70,10)">
-                <!-- FSA -->
-                <rect x="0" y="20" width="185" height="14" fill="#3aab7b" rx="2"/>
-                <rect x="0" y="20" width="162" height="14" fill="none" stroke="#3aab7b" stroke-width="1" rx="2"/>
-                <text x="-8" y="30" text-anchor="end" font-size="10" fill="#6b7280">FSA</text>
-                <text x="190" y="30" font-size="10" fill="#374151" font-weight="600">5,574</text>
-                <!-- APHIS -->
-                <rect x="0" y="44" width="62" height="14" fill="#3aab7b" rx="2"/>
-                <text x="-8" y="54" text-anchor="end" font-size="10" fill="#6b7280">APHIS</text>
-                <text x="67" y="54" font-size="10" fill="#374151" font-weight="600">601</text>
-                <!-- FNS -->
-                <rect x="0" y="68" width="50" height="14" fill="#3aab7b" rx="2"/>
-                <text x="-8" y="78" text-anchor="end" font-size="10" fill="#6b7280">FNS</text>
-                <text x="55" y="78" font-size="10" fill="#374151" font-weight="600">480</text>
-                <!-- NRCS -->
-                <rect x="0" y="92" width="28" height="14" fill="#3aab7b" rx="2"/>
-                <text x="-8" y="102" text-anchor="end" font-size="10" fill="#6b7280">NRCS</text>
-                <text x="33" y="102" font-size="10" fill="#374151" font-weight="600">261</text>
-                <!-- AMS -->
-                <rect x="0" y="116" width="18" height="14" fill="#3aab7b" rx="2"/>
-                <text x="-8" y="126" text-anchor="end" font-size="10" fill="#6b7280">AMS</text>
-                <text x="23" y="126" font-size="10" fill="#374151" font-weight="600">143</text>
-                <!-- Other -->
-                <rect x="0" y="140" width="35" height="14" fill="#93c5fd" rx="2"/>
-                <text x="-8" y="152" text-anchor="end" font-size="10" fill="#6b7280">Other</text>
-                <text x="40" y="152" font-size="10" fill="#374151" font-weight="600">289</text>
-                <!-- axis line -->
-                <line x1="0" y1="0" x2="0" y2="165" stroke="#e5e7eb" stroke-width="1"/>
-              </g>
-            </svg>
-            <div class="legend">
-              <div class="legend-item"><div class="legend-dot" style="background:#3aab7b"></div>Received</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>Closed</div>
-            </div>
-          </div>
-
-          <div class="chart-card">
-            <div class="chart-title">Status Distribution</div>
-            <div class="chart-subtitle">All active requests — current snapshot</div>
-            <svg width="100%" height="180" viewBox="0 0 300 180">
-              <g transform="translate(100,90)">
-                <!-- donut segments -->
-                <circle cx="0" cy="0" r="60" fill="none" stroke="#e5e7eb" stroke-width="28"/>
-                <circle cx="0" cy="0" r="60" fill="none" stroke="#3aab7b" stroke-width="28" stroke-dasharray="170 208" stroke-dashoffset="0" transform="rotate(-90)"/>
-                <circle cx="0" cy="0" r="60" fill="none" stroke="#93c5fd" stroke-width="28" stroke-dasharray="70 208" stroke-dashoffset="-170" transform="rotate(-90)"/>
-                <circle cx="0" cy="0" r="60" fill="none" stroke="#fcd34d" stroke-width="28" stroke-dasharray="45 208" stroke-dashoffset="-240" transform="rotate(-90)"/>
-                <circle cx="0" cy="0" r="60" fill="none" stroke="#fca5a5" stroke-width="28" stroke-dasharray="28 208" stroke-dashoffset="-285" transform="rotate(-90)"/>
-                <text x="0" y="-6" text-anchor="middle" font-size="18" font-weight="700" fill="#111827">1,133</text>
-                <text x="0" y="10" text-anchor="middle" font-size="10" fill="#6b7280">Active</text>
-              </g>
-              <!-- Legend -->
-              <g transform="translate(175,30)">
-                <rect x="0" y="0" width="10" height="10" fill="#3aab7b" rx="2"/>
-                <text x="14" y="9" font-size="10" fill="#374151">In Review (54%)</text>
-                <rect x="0" y="20" width="10" height="10" fill="#93c5fd" rx="2"/>
-                <text x="14" y="29" font-size="10" fill="#374151">Perfection (22%)</text>
-                <rect x="0" y="40" width="10" height="10" fill="#fcd34d" rx="2"/>
-                <text x="14" y="49" font-size="10" fill="#374151">Awaiting Docs (14%)</text>
-                <rect x="0" y="60" width="10" height="10" fill="#fca5a5" rx="2"/>
-                <text x="14" y="69" font-size="10" fill="#374151">Overdue (9%)</text>
-              </g>
-            </svg>
-          </div>
-        </div>
-
-        <!-- Recent Activity Table -->
-        <div class="table-card">
-          <div class="table-header">
-            <span class="table-title">Recent Activity</span>
-            <div class="table-actions">
-              <input class="search-input" type="text" placeholder="Search cases...">
-              <button class="btn-primary" onclick="showScreen('workload')">View All</button>
-            </div>
-          </div>
-          <table>
-            <thead><tr>
-              <th>Case #</th><th>Requester</th><th>Component</th><th>Received</th><th>Due Date</th><th>Days Left</th><th>Track</th><th>Status</th><th>AI Score</th>
-            </tr></thead>
-            <tbody>
-              <tr onclick="showScreen('casedetail')"><td><b>FSA-2026-04821</b></td><td>A. Chen / Reuters</td><td>FSA</td><td>Apr 10</td><td>May 8</td><td class="days-ok">+14</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-green">In Review</span></td><td>72</td></tr>
-              <tr onclick="showScreen('casedetail')"><td><b>APHIS-2026-01103</b></td><td>EWG / Advocacy</td><td>APHIS</td><td>Apr 8</td><td>May 6</td><td class="days-warn">+12</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-orange">Perfection</span></td><td>88</td></tr>
-              <tr onclick="showScreen('casedetail')"><td><b>FSA-2026-04819</b></td><td>J. Williams / FOIA.gov</td><td>FSA</td><td>Apr 7</td><td>May 5</td><td class="days-warn">+11</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-blue">Awaiting Docs</span></td><td>45</td></tr>
-              <tr onclick="showScreen('casedetail')"><td><b>FNS-2026-00892</b></td><td>Center on Budget / Policy</td><td>FNS</td><td>Apr 5</td><td>May 1</td><td class="days-bad">+7</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-red">Overdue</span></td><td>91</td></tr>
-              <tr onclick="showScreen('casedetail')"><td><b>NRCS-2026-00441</b></td><td>B. Martinez / Individual</td><td>NRCS</td><td>Apr 3</td><td>Apr 29</td><td class="days-bad">+3</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-orange">In Review</span></td><td>38</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="fs"><div class="fs-lbl">Fiscal Year</div>
+      <div class="fsel"><select id="dash-fy" onchange="updateDashFilter()"><option>FY2024</option><option>FY2023</option><option>FY2022</option></select></div>
+    </div>
+    <div class="fs"><div class="fs-lbl">Track</div>
+      <div class="fsel"><select><option>All Tracks</option><option>Simple</option><option>Complex</option></select></div>
+    </div>
+    <div class="fa"><button class="btn btn-p btn-sm">Apply</button><button class="btn btn-gh btn-sm" onclick="resetFilter()">Clear all</button></div>
+  </div>
+  <div class="main" id="dash-main">
+    <!-- KPIs injected by JS -->
+    <div class="krow" id="kpi-row"></div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Request Volume by Component — FY2024</div><div class="card-sub">Actual received · Source: USDA Annual FOIA Report</div><svg id="comp-chart" width="100%" height="190" viewBox="0 0 320 190"></svg></div>
+      <div class="card"><div class="card-title">Volume Trend — FY2022 to FY2024</div><div class="card-sub">Received vs. Processed vs. Backlog</div><svg id="trend-chart" width="100%" height="190" viewBox="0 0 320 190"></svg></div>
+    </div>
+    <div class="tc">
+      <div class="th"><b>Recent Cases</b><div class="th-acts"><input class="si" type="text" placeholder="Search cases..." oninput="filterWorkTable(this.value)"><button class="btn btn-p btn-sm" onclick="nav('work')">View All</button></div></div>
+      <table><thead><tr><th>Case #</th><th>Requester</th><th>Component</th><th>Received</th><th>Due</th><th>Days</th><th>Track</th><th>Status</th><th>AI Score</th></tr></thead>
+      <tbody id="dash-table"></tbody></table>
     </div>
   </div>
 </div>
+</div>
+</div>
 
-<!-- ════════════════════════════ SCREEN: WORKLOAD ════════════════════════════ -->
-<div class="screen" id="screen-workload">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">Workload Queue</div>
-      <div class="topbar-right">
-        <div class="select-pill">My Cases <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <button class="btn-primary">+ New Request</button>
-      </div>
+<!-- ═══════════ WORKLOAD ═══════════ -->
+<div class="scr" id="scr-work">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on">Workload Queue</div>
+  <div class="tb-r">
+    <div class="pill">My Cases <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="pill">Sort: Due ↑ <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <button class="btn btn-p btn-sm" onclick="openModal('intake')">+ New Request</button>
+  </div>
+</div>
+<div class="ca">
+  <div class="fp">
+    <div class="fp-hdr"><b>Filter</b></div>
+    <div class="fs"><div class="fs-lbl">Component</div>
+      <div class="fsel"><select id="wk-comp" onchange="filterWork()"><option value="">All Components</option><option>FSA</option><option>APHIS</option><option>FNS</option><option>NRCS</option><option>RD</option><option>ARS</option><option>AMS</option></select></div>
     </div>
-    <div class="content-area">
-      <div class="filter-panel">
-        <div class="filter-panel-header"><span>Filter</span></div>
-        <div class="filter-section">
-          <div class="filter-section-label">Component <a href="#">Clear</a></div>
-          <div class="filter-select">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Status</div>
-          <div class="filter-select">All Statuses <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Track Type</div>
-          <div class="filter-select">All Tracks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Assigned To</div>
-          <div class="filter-select">Anyone <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Priority</div>
-          <div class="filter-select">All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-actions">
-          <button class="btn-primary">Apply</button>
-          <button class="btn-ghost">Clear all</button>
-        </div>
+    <div class="fs"><div class="fs-lbl">Status</div>
+      <div class="fsel"><select id="wk-status" onchange="filterWork()"><option value="">All Statuses</option><option>In Review</option><option>Perfection</option><option>Awaiting Docs</option><option>Overdue</option><option>Closed</option></select></div>
+    </div>
+    <div class="fs"><div class="fs-lbl">Track</div>
+      <div class="fsel"><select id="wk-track" onchange="filterWork()"><option value="">All Tracks</option><option>Simple</option><option>Complex</option></select></div>
+    </div>
+    <div class="fs"><div class="fs-lbl">Assigned To</div>
+      <div class="fsel"><select id="wk-user" onchange="filterWork()"><option value="">Anyone</option><option>M. Torres</option><option>K. Johnson</option><option>D. Patel</option><option>S. Kim</option></select></div>
+    </div>
+    <div class="fa"><button class="btn btn-p btn-sm" onclick="filterWork()">Apply</button><button class="btn btn-gh btn-sm" onclick="clearWorkFilter()">Clear</button></div>
+  </div>
+  <div class="main" style="padding:14px">
+    <div class="tc">
+      <div class="th"><b id="work-count">Active Cases — 15 total</b>
+        <div class="th-acts"><input class="si" type="text" placeholder="Search case #, requester..." oninput="filterWorkTable(this.value)"></div>
       </div>
-      <div class="main" style="padding:16px;">
-        <div class="table-card">
-          <div class="table-header">
-            <span class="table-title">Active Cases — 1,133 total</span>
-            <div class="table-actions">
-              <input class="search-input" type="text" placeholder="Search case #, requester...">
-              <div class="select-pill">Sort: Due Date ↑ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            </div>
-          </div>
-          <table>
-            <thead><tr>
-              <th>Case #</th><th>Requester / Org</th><th>Component</th><th>Description</th><th>Received</th><th>Due Date</th><th>Days</th><th>Track</th><th>Status</th><th>AI Score</th><th>Assigned</th>
-            </tr></thead>
-            <tbody>
-              <tr onclick="showScreen('casedetail')"><td><b style="color:#2563eb">FNS-2026-00892</b></td><td>Center on Budget</td><td>FNS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">SNAP waivers issued during COVID...</td><td>Apr 5</td><td>May 1</td><td class="days-bad">OVERDUE</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-red">Overdue</span></td><td><b style="color:#dc2626">91</b></td><td>K. Johnson</td></tr>
-              <tr onclick="showScreen('casedetail')"><td><b style="color:#2563eb">APHIS-2026-01103</b></td><td>EWG</td><td>APHIS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Pesticide residue inspection reports...</td><td>Apr 8</td><td>May 6</td><td class="days-warn">+12</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-orange">Perfection</span></td><td><b style="color:#b45309">88</b></td><td>M. Torres</td></tr>
-              <tr onclick="showScreen('casedetail')"><td><b style="color:#2563eb">FSA-2026-04821</b></td><td>A. Chen / Reuters</td><td>FSA</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Farm loan payment records FY2024...</td><td>Apr 10</td><td>May 8</td><td class="days-ok">+14</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-green">In Review</span></td><td>72</td><td>D. Patel</td></tr>
-              <tr><td><b style="color:#2563eb">NRCS-2026-00441</b></td><td>B. Martinez</td><td>NRCS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Conservation easement contracts...</td><td>Apr 3</td><td>Apr 29</td><td class="days-bad">+3</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-orange">In Review</span></td><td>38</td><td>S. Kim</td></tr>
-              <tr><td><b style="color:#2563eb">FSA-2026-04819</b></td><td>J. Williams</td><td>FSA</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Crop insurance payout data...</td><td>Apr 7</td><td>May 5</td><td class="days-warn">+11</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-blue">Awaiting Docs</span></td><td>45</td><td>D. Patel</td></tr>
-              <tr><td><b style="color:#2563eb">AMS-2026-00301</b></td><td>Food & Water Watch</td><td>AMS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">Meat grading audit reports Q3...</td><td>Apr 11</td><td>May 9</td><td class="days-ok">+15</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-green">In Review</span></td><td>79</td><td>Unassigned</td></tr>
-              <tr><td><b style="color:#2563eb">FSA-2026-04815</b></td><td>R. Thompson / Individual</td><td>FSA</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">FSN parcel data for county...</td><td>Apr 1</td><td>Apr 27</td><td class="days-bad">+1</td><td><span class="badge badge-blue">Simple</span></td><td><span class="badge badge-red">Overdue</span></td><td>61</td><td>K. Johnson</td></tr>
-              <tr><td><b style="color:#2563eb">APHIS-2026-01099</b></td><td>NYT / Media</td><td>APHIS</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">H5N1 avian flu inspection logs...</td><td>Apr 9</td><td>May 7</td><td class="days-ok">+13</td><td><span class="badge badge-orange">Complex</span></td><td><span class="badge badge-purple">AI Flagged</span></td><td><b style="color:#dc2626">94</b></td><td>M. Torres</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <table><thead><tr><th onclick="sortWork('id')">Case # ↕</th><th>Requester</th><th onclick="sortWork('comp')">Component ↕</th><th style="max-width:160px">Description</th><th onclick="sortWork('rec')">Received ↕</th><th onclick="sortWork('due')">Due ↕</th><th onclick="sortWork('days')">Days ↕</th><th>Track</th><th>Status</th><th onclick="sortWork('score')">AI Score ↕</th><th>Assigned</th></tr></thead>
+      <tbody id="work-table"></tbody></table>
     </div>
   </div>
 </div>
+</div>
+</div>
 
-<!-- ════════════════════════════ SCREEN: CASE DETAIL ════════════════════════════ -->
-<div class="screen" id="screen-casedetail">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">Case Detail</div>
-      <div class="topbar-right">
-        <span style="font-size:12px;color:#6b7280;margin-right:8px">← <a href="#" onclick="showScreen('workload');return false;" style="color:#2563eb">Back to Workload</a></span>
-        <button class="btn-red" style="margin-right:6px">Stop the Clock</button>
-        <button class="btn-ghost" style="margin-right:6px">Transfer</button>
-        <button class="btn-green">Close Case</button>
+<!-- ═══════════ CASE DETAIL ═══════════ -->
+<div class="scr" id="scr-case">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on" id="case-breadcrumb">Case Detail</div>
+  <div class="tb-r">
+    <span style="font-size:11px;color:var(--t2)">← <a href="#" onclick="nav('work');return false" style="color:var(--blue)">Workload</a></span>
+    <button class="btn btn-r btn-sm" onclick="openModal('stopclock')">Stop the Clock</button>
+    <button class="btn btn-gh btn-sm" onclick="openModal('transfer')">Transfer</button>
+    <button class="btn btn-g btn-sm" onclick="closeCase()">Close Case</button>
+  </div>
+</div>
+<div class="ca">
+<div class="main" style="max-width:900px">
+  <div class="clk"><span class="clk-t"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>21-Day Clock Running — Due: <b id="case-due">May 6, 2026</b> &nbsp;|&nbsp; <b id="case-days-left">12 business days remaining</b></span><span style="font-size:10px;color:#92400e" id="case-started">Started Apr 8, 2026</span></div>
+  <div class="ai-c">
+    <div class="ai-ttl"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:var(--blue);fill:none;stroke-width:2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3"/></svg>AI Analysis</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px">
+      <div><div style="color:var(--t2);margin-bottom:3px">Complexity Score</div><div style="font-size:22px;font-weight:800;color:#1d4ed8" id="case-score">88</div><div class="sbar"><div class="sbar-f" id="case-score-bar" style="width:88%"></div></div><div id="case-track-label" style="color:#b45309;font-weight:600;font-size:10px">HIGH — Complex Track</div></div>
+      <div><div style="color:var(--t2);margin-bottom:3px">Routing</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="case-routing">APHIS — PPQ Division</div><div style="color:var(--t2);margin-top:2px;font-size:10px" id="case-conf">Confidence: 94%</div><div style="color:var(--green);margin-top:2px;font-size:10px">✓ Accepted</div></div>
+      <div><div style="color:var(--t2);margin-bottom:3px">Duplicate Detection</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="case-dup">1 Similar Case</div><div style="color:var(--blue);margin-top:2px;font-size:10px;cursor:pointer">APHIS-2026-01041 →</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="dtabs" id="case-tabs">
+      <div class="dt on" onclick="caseTab('summary',this)">Summary</div>
+      <div class="dt" onclick="caseTab('docs',this)">Documents (4)</div>
+      <div class="dt" onclick="caseTab('log',this)">Audit Log</div>
+      <div class="dt" onclick="caseTab('assign',this)">Assignments</div>
+      <div class="dt" onclick="caseTab('appeal',this)">Appeal</div>
+    </div>
+    <!-- SUMMARY TAB -->
+    <div id="tab-summary">
+      <div class="fg2">
+        <div class="fg"><div class="flbl">Case Number</div><div class="fval" id="cd-num">APHIS-2026-01103</div></div>
+        <div class="fg"><div class="flbl">Status</div><div class="fval"><span class="b b-o" id="cd-status">Perfection Required</span></div></div>
+        <div class="fg"><div class="flbl">Requester</div><div class="fval" id="cd-req">Environmental Working Group (EWG)</div></div>
+        <div class="fg"><div class="flbl">Requester Type</div><div class="fval" id="cd-rtype">Non-profit / Advocacy</div></div>
+        <div class="fg"><div class="flbl">Email</div><div class="fval" id="cd-email">foia@ewg.org</div></div>
+        <div class="fg"><div class="flbl">Component</div><div class="fval" id="cd-comp">APHIS — PPQ Division</div></div>
+        <div class="fg"><div class="flbl">Received</div><div class="fval" id="cd-recv">April 8, 2026</div></div>
+        <div class="fg"><div class="flbl">Due Date</div><div class="fval" id="cd-due2">May 6, 2026</div></div>
+        <div class="fg"><div class="flbl">Track</div><div class="fval"><span class="b b-o" id="cd-track">Complex</span></div></div>
+        <div class="fg"><div class="flbl">Fee Category</div><div class="fval" id="cd-fee">News Media — Waiver Requested</div></div>
+        <div class="fg full"><div class="flbl">Request Description</div><div class="fval" style="white-space:normal;line-height:1.5" id="cd-desc">All records related to pesticide residue inspection reports for imported produce, including internal APHIS memos, inspection logs, and enforcement actions, from January 1, 2024 through March 31, 2026.</div></div>
+        <div class="fg"><div class="flbl">Assigned Officer</div><div class="fval e" id="cd-officer">M. Torres — APHIS FOIA Office</div></div>
+        <div class="fg"><div class="flbl">Perfection Note</div><div class="fval e" style="color:#b45309" id="cd-note">Awaiting scope clarification — sent Apr 12</div></div>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
+        <div class="flbl" style="margin-bottom:7px">Exemptions Applied</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <span class="b b-p">b(4) Commercial / Trade Secrets</span>
+          <span class="b b-gr">b(6) Personal Privacy — Under Review</span>
+          <button class="btn btn-gh btn-sm" onclick="toast('Exemption panel opening...','ok')">+ Add Exemption</button>
+        </div>
       </div>
     </div>
-    <div class="content-area">
-      <div class="main" style="padding:16px;max-width:100%">
-
-        <!-- AI & Clock banners -->
-        <div class="clock-banner">
-          <span class="clock-banner-text">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            21-Day Clock Running — Due: May 6, 2026 &nbsp;|&nbsp; <b>12 business days remaining</b>
-          </span>
-          <span style="font-size:11px;color:#92400e">Started Apr 8, 2026</span>
-        </div>
-        <div class="ai-card">
-          <div class="ai-card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>
-            AI Analysis
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px">
-            <div><div style="color:#6b7280;margin-bottom:3px">Complexity Score</div><div style="font-size:20px;font-weight:700;color:#1d4ed8">88 <span style="font-size:11px;color:#6b7280">/ 100</span></div><div class="score-bar-wrap"><div class="score-bar" style="width:88%"></div></div><div style="color:#b45309;font-weight:600">HIGH — Complex Track</div></div>
-            <div><div style="color:#6b7280;margin-bottom:3px">Routing Suggestion</div><div style="font-weight:600;color:#374151;margin-top:4px">APHIS — PPQ Division</div><div style="color:#6b7280;margin-top:2px">Confidence: 94%</div><div style="color:#3aab7b;margin-top:2px">✓ Accepted by officer</div></div>
-            <div><div style="color:#6b7280;margin-bottom:3px">Duplicate Detection</div><div style="font-weight:600;color:#374151;margin-top:4px">1 Similar Case Found</div><div style="color:#6b7280;margin-top:2px">APHIS-2026-01041</div><div style="color:#2563eb;margin-top:2px;cursor:pointer">Review →</div></div>
-          </div>
-        </div>
-
-        <!-- Case form -->
-        <div class="chart-card" style="margin-bottom:14px">
-          <div class="detail-tabs">
-            <div class="detail-tab active">Summary</div>
-            <div class="detail-tab" onclick="showScreen('documents')">Documents (4)</div>
-            <div class="detail-tab">Audit Log</div>
-            <div class="detail-tab">Assignments</div>
-            <div class="detail-tab">Communications</div>
-            <div class="detail-tab">Appeal</div>
-          </div>
-          <div class="form-grid">
-            <div class="form-group"><div class="form-label">Case Number</div><div class="form-value">APHIS-2026-01103</div></div>
-            <div class="form-group"><div class="form-label">Status</div><div class="form-value"><span class="badge badge-orange">Perfection Required</span></div></div>
-            <div class="form-group"><div class="form-label">Requester Name</div><div class="form-value">Environmental Working Group (EWG)</div></div>
-            <div class="form-group"><div class="form-label">Requester Type</div><div class="form-value">Non-profit / Advocacy</div></div>
-            <div class="form-group"><div class="form-label">Email</div><div class="form-value">foia@ewg.org</div></div>
-            <div class="form-group"><div class="form-label">Component</div><div class="form-value">APHIS — Plant Protection & Quarantine</div></div>
-            <div class="form-group"><div class="form-label">Received Date</div><div class="form-value">April 8, 2026</div></div>
-            <div class="form-group"><div class="form-label">Due Date</div><div class="form-value">May 6, 2026</div></div>
-            <div class="form-group"><div class="form-label">Track Type</div><div class="form-value"><span class="badge badge-orange">Complex</span></div></div>
-            <div class="form-group"><div class="form-label">Fee Category</div><div class="form-value">News Media / Fee Waiver Requested</div></div>
-            <div class="form-group full"><div class="form-label">Request Description</div><div class="form-value" style="white-space:normal;line-height:1.5">All records related to pesticide residue inspection reports for imported produce, including internal APHIS memos, inspection logs, and enforcement actions, from January 1, 2024 through March 31, 2026.</div></div>
-            <div class="form-group"><div class="form-label">Assigned Officer</div><div class="form-value editable">M. Torres — APHIS FOIA Office</div></div>
-            <div class="form-group"><div class="form-label">Perfection Note</div><div class="form-value editable" style="color:#b45309">Awaiting clarification on geographic scope — sent Apr 12</div></div>
-          </div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-            <div class="form-label" style="margin-bottom:8px">Exemptions Applied</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <span class="badge badge-purple">b(4) Commercial/Trade Secrets</span>
-              <span class="badge badge-gray">b(6) Personal Privacy — Under Review</span>
-              <button class="btn-ghost" style="font-size:11px;padding:3px 10px">+ Add Exemption</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Audit log preview -->
-        <div class="chart-card">
-          <div class="chart-title" style="margin-bottom:10px">Recent Activity</div>
-          <div class="log-item"><div class="log-dot" style="background:#3aab7b"></div><div><div class="log-text">Perfection notice sent to requester — scope clarification requested</div><div class="log-time">Apr 12, 2026 at 2:41 PM — M. Torres</div></div></div>
-          <div class="log-item"><div class="log-dot" style="background:#93c5fd"></div><div><div class="log-text">AI complexity score generated: 88 — Complex track recommended</div><div class="log-time">Apr 8, 2026 at 9:03 AM — System (AI Engine v2.1)</div></div></div>
-          <div class="log-item"><div class="log-dot" style="background:#3aab7b"></div><div><div class="log-text">Case created — intake via USDA ePortal submission #EP-44921</div><div class="log-time">Apr 8, 2026 at 8:47 AM — System (Intake)</div></div></div>
-        </div>
+    <!-- DOCS TAB -->
+    <div id="tab-docs" style="display:none">
+      <div class="ai-c" style="margin-bottom:10px"><div class="ai-ttl">AI Redaction Pass Complete</div><div style="font-size:11px;color:var(--t1)">Reviewed <b>4 documents (312 pages)</b> — flagged <b>47 PII instances</b> and <b>23 potential b(4) passages</b>. <span style="color:var(--blue);cursor:pointer">Review suggestions →</span></div></div>
+      <div id="docs-list">
+        <div class="dr"><div class="di"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">APHIS_PPQ_Pesticide_Inspection_FY2024.pdf</div><div class="dm">148 pages · Apr 10 · M. Torres</div></div><span class="b b-r">31 AI Flags</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening redaction viewer...','ok')">Review</button></div>
+        <div class="dr"><div class="di"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Internal_Memos_ImportProduce_Q1Q2_2025.pdf</div><div class="dm">94 pages · Apr 10 · M. Torres</div></div><span class="b b-o">18 Flags — In Review</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening redaction viewer...','ok')">Review</button></div>
+        <div class="dr"><div class="di" style="background:#dcfce7"><svg viewBox="0 0 24 24" style="fill:#15803d"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Enforcement_Actions_FY2024_FY2025.pdf</div><div class="dm">52 pages · Apr 11 · M. Torres</div></div><span class="b b-g">Redaction Complete</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Downloading...','ok')">Download</button></div>
+        <div class="dr"><div class="di" style="background:#ede9fe"><svg viewBox="0 0 24 24" style="fill:#6d28d9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div style="flex:1"><div class="dn">Search_Memo_APHIS_PPQ_Apr12.docx</div><div class="dm">3 pages · AI-generated · Approved Apr 12</div></div><span class="b b-p">Search Memo</span><button class="btn btn-gh btn-sm" style="margin-left:8px" onclick="toast('Opening memo...','ok')">View</button></div>
       </div>
+      <div style="margin-top:10px"><button class="btn btn-p btn-sm" onclick="simUpload()">+ Upload Document</button>&nbsp;<button class="btn btn-g btn-sm" onclick="simRedaction()">Run AI Redaction Pass</button></div>
+    </div>
+    <!-- LOG TAB -->
+    <div id="tab-log" style="display:none" id="audit-log-tab">
+      <div id="case-log-list">
+        <div class="log-i"><div class="log-d"></div><div><div class="log-t">Perfection notice sent to requester — scope clarification requested</div><div class="log-s">Apr 12, 2026 2:41 PM — M. Torres</div></div></div>
+        <div class="log-i"><div class="log-d" style="background:#93c5fd"></div><div><div class="log-t">AI complexity score generated: 88 — Complex track recommended (accepted)</div><div class="log-s">Apr 8, 2026 9:03 AM — System · AI Engine v2.1</div></div></div>
+        <div class="log-i"><div class="log-d"></div><div><div class="log-t">Case created via USDA ePortal — submission #EP-44921</div><div class="log-s">Apr 8, 2026 8:47 AM — System · Intake</div></div></div>
+      </div>
+    </div>
+    <!-- ASSIGN TAB -->
+    <div id="tab-assign" style="display:none">
+      <table><thead><tr><th>Date</th><th>Assigned To</th><th>From</th><th>To</th><th>Reason</th></tr></thead>
+      <tbody><tr><td>Apr 8, 2026</td><td>M. Torres</td><td>Intake Queue</td><td>APHIS FOIA</td><td>Initial AI routing — PPQ subject matter</td></tr></tbody></table>
+    </div>
+    <!-- APPEAL TAB -->
+    <div id="tab-appeal" style="display:none">
+      <div style="padding:20px;text-align:center;color:var(--t2)"><div style="font-size:24px;margin-bottom:8px">—</div><div style="font-size:12px">No appeal filed for this case.</div><button class="btn btn-gh btn-sm" style="margin-top:10px" onclick="toast('Appeal form opening...','ok')">File Appeal</button></div>
     </div>
   </div>
 </div>
+</div>
+</div>
+</div>
 
-<!-- ════════════════════════════ SCREEN: DOCUMENTS ════════════════════════════ -->
-<div class="screen" id="screen-documents">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab">Case APHIS-2026-01103</div>
-      <div class="tab active">Documents</div>
-      <div class="topbar-right">
-        <button class="btn-ghost" onclick="showScreen('casedetail')">← Back to Case</button>
-        <button class="btn-primary" style="margin-left:8px">+ Upload Document</button>
-        <button class="btn-green" style="margin-left:6px">Run AI Redaction Pass</button>
+<!-- ═══════════ SEARCH ═══════════ -->
+<div class="scr" id="scr-search">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on">Search & Discovery</div>
+  <div class="tab" onclick="nav('datasets')">Dataset Catalog</div>
+  <div class="tb-r"><div class="pill">All Sources <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+</div>
+<div class="ca">
+  <div class="fp">
+    <div class="fp-hdr"><b>Sources</b></div>
+    <div class="fs"><div class="fs-lbl">Repository</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" checked> AG Records</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" checked> SharePoint</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" checked> Email Archive</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> Shared Drive</label>
       </div>
     </div>
-    <div class="content-area">
-      <div class="filter-panel">
-        <div class="filter-panel-header"><span>Filter</span></div>
-        <div class="filter-section">
-          <div class="filter-section-label">Redaction Status</div>
-          <div class="filter-select">All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">File Type</div>
-          <div class="filter-select">All Types <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Exemption</div>
-          <div class="filter-select">All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-actions"><button class="btn-primary">Apply</button><button class="btn-ghost">Clear</button></div>
+    <div class="fs"><div class="fs-lbl">Date Range</div><div class="fsel"><select><option>Last 2 Years</option><option>Last Year</option><option>All Time</option></select></div></div>
+    <div class="fs"><div class="fs-lbl">Component</div><div class="fsel"><select id="srch-comp"><option>All</option><option>APHIS</option><option>FSA</option><option>FNS</option></select></div></div>
+    <div class="fa"><button class="btn btn-p btn-sm" onclick="runSearch()">Search</button><button class="btn btn-gh btn-sm">Clear</button></div>
+  </div>
+  <div class="main">
+    <div class="srch-hero">
+      <div style="font-size:11px;color:var(--t2);margin-bottom:8px">Searching across: AG Records · SharePoint · Email Archive</div>
+      <div class="srch-bar">
+        <input class="srch-in" id="srch-input" type="text" placeholder="Describe what you're looking for in plain English..." value="pesticide residue inspection reports imported produce 2024 2025" onkeydown="if(event.key==='Enter')runSearch()">
+        <button class="btn btn-p" onclick="runSearch()">Search</button>
       </div>
-      <div class="main" style="padding:16px">
-        <!-- AI Redaction Banner -->
-        <div class="ai-card" style="margin-bottom:14px">
-          <div class="ai-card-title">AI Redaction Analysis Complete</div>
-          <div style="font-size:12px;color:#374151;line-height:1.6">
-            Reviewed <b>4 documents (312 pages)</b> — identified <b>47 PII instances</b> and <b>23 potential b(4) passages</b> for human review.
-            <span style="color:#2563eb;cursor:pointer;margin-left:8px">Review AI Suggestions →</span>
-          </div>
-        </div>
-        <div class="table-card">
-          <div class="table-header"><span class="table-title">Attached Documents (4)</span></div>
-          <div>
-            <div class="doc-row">
-              <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div class="doc-info"><div class="doc-name">APHIS_PPQ_Pesticide_Inspection_FY2024.pdf</div><div class="doc-meta">148 pages · Uploaded Apr 10, 2026 · M. Torres</div></div>
-              <span class="badge badge-red">AI Review Needed — 31 flags</span>
-              <button class="btn-ghost" style="margin-left:12px;font-size:11px">Review</button>
-            </div>
-            <div class="doc-row">
-              <div class="doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div class="doc-info"><div class="doc-name">Internal_Memos_ImportProduce_Q1Q2_2025.pdf</div><div class="doc-meta">94 pages · Uploaded Apr 10, 2026 · M. Torres</div></div>
-              <span class="badge badge-orange">In Review — 18 flags</span>
-              <button class="btn-ghost" style="margin-left:12px;font-size:11px">Review</button>
-            </div>
-            <div class="doc-row">
-              <div class="doc-icon" style="background:#dcfce7"><svg viewBox="0 0 24 24" style="fill:#15803d"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div class="doc-info"><div class="doc-name">Enforcement_Actions_FY2024_FY2025.pdf</div><div class="doc-meta">52 pages · Uploaded Apr 11, 2026 · M. Torres</div></div>
-              <span class="badge badge-green">Redaction Complete</span>
-              <button class="btn-ghost" style="margin-left:12px;font-size:11px">Download</button>
-            </div>
-            <div class="doc-row">
-              <div class="doc-icon" style="background:#ede9fe"><svg viewBox="0 0 24 24" style="fill:#6d28d9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div class="doc-info"><div class="doc-name">Search_Memo_APHIS_PPQ_Apr12.docx</div><div class="doc-meta">3 pages · AI-generated draft · Approved Apr 12, 2026</div></div>
-              <span class="badge badge-purple">Search Memo</span>
-              <button class="btn-ghost" style="margin-left:12px;font-size:11px">View</button>
-            </div>
-          </div>
-        </div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:10px;color:var(--t2)">Refine:</span>
+        <span class="srch-tag" onclick="addTag('PPQ division only')">+ PPQ division only</span>
+        <span class="srch-tag" onclick="addTag('enforcement actions only')">+ enforcement actions only</span>
+        <span class="srch-tag" onclick="addTag('exclude drafts')">+ exclude drafts</span>
       </div>
+      <div id="ai-query-note" style="margin-top:10px;padding:8px 10px;background:#fef3c7;border-radius:5px;font-size:10px;color:#92400e"><b>AI Note:</b> Query may be over-broad — est. 2,400+ documents. Consider adding commodity type or country of origin.</div>
+    </div>
+    <div id="srch-results"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════ DATASET CATALOG ═══════════ -->
+<div class="scr" id="scr-datasets">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab" onclick="nav('search')">Search</div>
+  <div class="tab on">Dataset Catalog</div>
+  <div class="tb-r"><div class="pill">30 Datasets <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+</div>
+<div class="ca">
+  <div class="fp">
+    <div class="fp-hdr"><b>Filter</b></div>
+    <div class="fs"><div class="fs-lbl">Agency</div><div class="fsel"><select id="ds-agency" onchange="filterDatasets()"><option value="">All Agencies</option><option>FSA</option><option>NRCS</option><option>USFS</option><option>NASS</option><option>ERS</option></select></div></div>
+    <div class="fs"><div class="fs-lbl">Relevance</div><div class="fsel"><select id="ds-rel" onchange="filterDatasets()"><option value="">All</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option></select></div></div>
+    <div class="fs"><div class="fs-lbl">Format</div><div class="fsel"><select id="ds-fmt" onchange="filterDatasets()"><option value="">All Formats</option><option>CSV</option><option>Excel</option><option>API</option><option>Shapefile</option></select></div></div>
+    <div class="fa"><button class="btn btn-p btn-sm" onclick="filterDatasets()">Apply</button><button class="btn btn-gh btn-sm" onclick="clearDsFilter()">Clear</button></div>
+  </div>
+  <div class="main">
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px">
+      <input class="si" style="width:260px" type="text" placeholder="Search datasets..." oninput="filterDatasets(this.value)" id="ds-search">
+      <span style="font-size:11px;color:var(--t2)" id="ds-count">Showing 30 datasets</span>
+    </div>
+    <div id="ds-list"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════ ANALYTICS ═══════════ -->
+<div class="scr" id="scr-analytics">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on">Analytics</div>
+  <div class="tab">Annual Report</div>
+  <div class="tb-r">
+    <div class="pill">FY2022–FY2024 <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <button class="btn btn-gh btn-sm" onclick="toast('Generating NIEM XML report...','ok')">Export Annual Report</button>
+  </div>
+</div>
+<div class="ca">
+  <div class="fp">
+    <div class="fp-hdr"><b>Filter</b></div>
+    <div class="fs"><div class="fs-lbl">Component</div><div class="fsel"><select><option>All Components</option><option>FSA</option><option>APHIS</option><option>FNS</option></select></div></div>
+    <div class="fs"><div class="fs-lbl">Fiscal Year</div><div class="fsel"><select><option>FY2022–2024</option><option>FY2024</option><option>FY2023</option><option>FY2022</option></select></div></div>
+    <div class="fa"><button class="btn btn-p btn-sm">Apply</button><button class="btn btn-gh btn-sm">Clear</button></div>
+  </div>
+  <div class="main">
+    <div class="krow" id="an-kpi"></div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Backlog Trend — FY2022 to FY2024</div><div class="card-sub">End-of-year pending requests · Real data from USDA Annual Reports</div><svg id="backlog-chart" width="100%" height="200" viewBox="0 0 320 200"></svg></div>
+      <div class="card"><div class="card-title">Processing Time — USDA vs. Peers</div><div class="card-sub">Simple track median days · FY2024 · Source: Agency Annual Reports</div><div id="bench-chart" style="margin-top:12px"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">FY2024 Component Volume Breakdown</div>
+      <div class="card-sub">Requests received by USDA component · Total: 24,722 · Source: usda-foia-annual-report-fy2024.xml</div>
+      <div id="comp-volume-table" style="margin-top:10px"></div>
     </div>
   </div>
 </div>
+</div>
+</div>
 
-<!-- ════════════════════════════ SCREEN: ANALYTICS ════════════════════════════ -->
-<div class="screen" id="screen-analytics">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">Analytics</div>
-      <div class="tab">Benchmarking</div>
-      <div class="tab">Annual Report</div>
-      <div class="topbar-right">
-        <div class="select-pill">FY2024–FY2026 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="select-pill">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-      </div>
-    </div>
-    <div class="content-area">
-      <div class="filter-panel">
-        <div class="filter-panel-header"><span>Filter</span></div>
-        <div class="filter-section">
-          <div class="filter-section-label">Component <a href="#">Clear</a></div>
-          <div class="filter-select">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Fiscal Year</div>
-          <div class="filter-select">FY2022 – FY2026 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Track</div>
-          <div class="filter-select">All Tracks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-actions"><button class="btn-primary">Filter</button><button class="btn-ghost">Clear all</button></div>
-      </div>
-      <div class="main">
-        <!-- KPI row -->
-        <div class="kpi-row">
-          <div class="kpi-card"><div class="kpi-label">Total Received FY2024</div><div class="kpi-value-row"><span class="kpi-value">24,722</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div><div class="kpi-date">+49% vs FY2022</div></div>
-          <div class="kpi-card"><div class="kpi-label">Close Rate FY2024</div><div class="kpi-value-row"><span class="kpi-value">85.4%</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div><div class="kpi-date">Target ≥95%</div></div>
-          <div class="kpi-card"><div class="kpi-label">End-of-FY Backlog</div><div class="kpi-value-row"><span class="kpi-value">2,270</span><span class="kpi-badge bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="kpi-date">Target &lt;500</div></div>
-          <div class="kpi-card"><div class="kpi-label">Simple Median Days</div><div class="kpi-value-row"><span class="kpi-value">17.4</span><span class="kpi-badge warn"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span></div><div class="kpi-date">HHS benchmark: 10</div></div>
-          <div class="kpi-card"><div class="kpi-label">Duplicates FY2024</div><div class="kpi-value-row"><span class="kpi-value">1,189</span><span class="kpi-badge bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="kpi-date">Before AI detection</div></div>
-        </div>
-
-        <div class="chart-row">
-          <!-- Backlog Trend -->
-          <div class="chart-card">
-            <div class="chart-title">Backlog Trend (FY2022–FY2026 YTD)</div>
-            <div class="chart-subtitle">End-of-year pending requests — with AI forecast</div>
-            <svg width="100%" height="170" viewBox="0 0 320 170">
-              <g transform="translate(30,10)">
-                <!-- grid -->
-                <line x1="0" y1="0" x2="280" y2="0" stroke="#f3f4f6" stroke-width="1"/>
-                <line x1="0" y1="40" x2="280" y2="40" stroke="#f3f4f6" stroke-width="1"/>
-                <line x1="0" y1="80" x2="280" y2="80" stroke="#f3f4f6" stroke-width="1"/>
-                <line x1="0" y1="120" x2="280" y2="120" stroke="#f3f4f6" stroke-width="1"/>
-                <!-- y-axis labels -->
-                <text x="-4" y="4" text-anchor="end" font-size="9" fill="#9ca3af">3000</text>
-                <text x="-4" y="44" text-anchor="end" font-size="9" fill="#9ca3af">2250</text>
-                <text x="-4" y="84" text-anchor="end" font-size="9" fill="#9ca3af">1500</text>
-                <text x="-4" y="124" text-anchor="end" font-size="9" fill="#9ca3af">750</text>
-                <!-- actual line -->
-                <polyline points="0,110 70,95 140,80 210,45 280,55" fill="none" stroke="#3aab7b" stroke-width="2.5" stroke-linejoin="round"/>
-                <!-- forecast (dashed) -->
-                <polyline points="280,55 310,38 340,22" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="5,3"/>
-                <!-- target line -->
-                <line x1="0" y1="113" x2="340" y2="113" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3"/>
-                <text x="342" y="117" font-size="9" fill="#6366f1">Target 500</text>
-                <!-- dots -->
-                <circle cx="0" cy="110" r="4" fill="#3aab7b"/>
-                <circle cx="70" cy="95" r="4" fill="#3aab7b"/>
-                <circle cx="140" cy="80" r="4" fill="#3aab7b"/>
-                <circle cx="210" cy="45" r="4" fill="#3aab7b"/>
-                <circle cx="280" cy="55" r="4" fill="#3aab7b"/>
-                <!-- x-axis labels -->
-                <text x="0" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY22</text>
-                <text x="70" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY23</text>
-                <text x="140" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY24</text>
-                <text x="210" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY25</text>
-                <text x="280" y="145" text-anchor="middle" font-size="9" fill="#9ca3af">FY26 YTD</text>
-              </g>
-            </svg>
-            <div class="legend">
-              <div class="legend-item"><div class="legend-line" style="background:#3aab7b"></div>Actual Backlog</div>
-              <div class="legend-item"><div class="legend-line" style="background:#93c5fd;border-top:2px dashed #93c5fd;height:0"></div>AI Forecast</div>
-              <div class="legend-item"><div class="legend-line" style="background:#6366f1"></div>Target</div>
-            </div>
-          </div>
-
-          <!-- Benchmark -->
-          <div class="chart-card">
-            <div class="chart-title">Processing Time — USDA vs. Peers (Simple Track)</div>
-            <div class="chart-subtitle">Median business days — FY2024</div>
-            <div style="margin-top:12px">
-              <div class="stat-row"><div class="stat-bar-label">HHS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:37%;background:#3aab7b;"><span style="font-size:9px;color:white">10d</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">DOT</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:44%;background:#93c5fd;"><span style="font-size:9px;color:#374151">12d</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">DOD</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:55%;background:#93c5fd;"><span style="font-size:9px;color:#374151">15d</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label" style="font-weight:700;color:#1a2535">USDA</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:64%;background:#fca5a5;"><span style="font-size:9px;color:#374151">17.4d</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">USDA Target</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:37%;background:#c7d2fe;"><span style="font-size:9px;color:#374151">10d</span></div><div class="threshold-line" style="left:37%"></div></div></div>
-            </div>
-            <div class="legend" style="margin-top:10px">
-              <div class="legend-item"><div class="legend-dot" style="background:#3aab7b"></div>At/Below Target</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>Above Target</div>
-              <div class="legend-item"><div class="legend-line" style="background:#6366f1"></div>USDA Target (10d)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exemption Usage -->
-        <div class="chart-card full">
-          <div class="chart-title">Exemption Usage by Component — FY2024</div>
-          <div class="chart-subtitle">Count of exemption applications per FOIA exemption category</div>
-          <div style="overflow-x:auto">
-            <table style="min-width:600px">
-              <thead><tr style="background:#f9fafb">
-                <th style="padding:8px 12px;font-size:10px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:left">Component</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(1)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(2)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(3)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(4)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(5)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(6)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(7)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(8)</th>
-                <th style="padding:8px;font-size:10px;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center">b(9)</th>
-              </tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 12px;font-size:11px;font-weight:600">FSA</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">12</td><td style="text-align:center;font-size:11px">89</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>2,341</b></td><td style="text-align:center;font-size:11px">445</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>1,892</b></td><td style="text-align:center;font-size:11px">34</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">7</td></tr>
-                <tr style="border-bottom:1px solid #f3f4f6;background:#f9fafb"><td style="padding:8px 12px;font-size:11px;font-weight:600">APHIS</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">4</td><td style="text-align:center;font-size:11px">28</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>441</b></td><td style="text-align:center;font-size:11px">112</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>389</b></td><td style="text-align:center;font-size:11px">61</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">0</td></tr>
-                <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 12px;font-size:11px;font-weight:600">FNS</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">2</td><td style="text-align:center;font-size:11px">14</td><td style="text-align:center;font-size:11px">88</td><td style="text-align:center;font-size:11px">201</td><td style="text-align:center;font-size:11px;background:#fef3c7"><b>312</b></td><td style="text-align:center;font-size:11px">8</td><td style="text-align:center;font-size:11px">0</td><td style="text-align:center;font-size:11px">0</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+<!-- ═══════════ AI HUB ═══════════ -->
+<div class="scr" id="scr-ai">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on">AI Hub</div>
+  <div class="tab">Model Performance</div>
+  <div class="tb-r"><div class="pill">All Components <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+</div>
+<div class="ca">
+<div class="main">
+  <div class="krow" id="ai-kpi"></div>
+  <div class="grid2">
+    <div class="card"><div class="card-title">Pending Human Review</div><div class="card-sub" style="margin-bottom:10px">AI-generated items awaiting officer action</div><div id="ai-queue"></div></div>
+    <div class="card"><div class="card-title">Routing Acceptance Rate</div><div class="card-sub" style="margin-bottom:12px">Officer acceptance of AI component routing — last 90 days</div><div id="routing-bars"></div>
+      <div style="margin-top:12px;padding:8px;background:#f0fdf4;border-radius:5px;font-size:10px;color:#15803d">Model last retrained: Apr 1, 2026 · Next: May 1, 2026</div>
     </div>
   </div>
 </div>
+</div>
+</div>
+</div>
 
-<!-- ════════════════════════════ SCREEN: SEARCH ════════════════════════════ -->
-<div class="screen" id="screen-search">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">Search & Discovery</div>
-      <div class="tab">Dataset Catalog</div>
-      <div class="topbar-right">
-        <div class="select-pill">All Sources <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-      </div>
+<!-- ═══════════ ADMIN ═══════════ -->
+<div class="scr" id="scr-admin">
+<div class="shell">
+<div class="topbar">
+  <span class="app-title">C3 AI FOIA Management</span>
+  <div class="tab on">Admin</div>
+  <div class="tab">Integrations</div>
+  <div class="tab">Audit</div>
+</div>
+<div class="ca">
+<div class="main">
+  <div class="grid2">
+    <div class="card"><div class="card-title" style="margin-bottom:10px">Users — 214 active</div>
+      <div class="th-acts" style="margin-bottom:10px"><input class="si" type="text" placeholder="Search users..."><button class="btn btn-p btn-sm" style="margin-left:7px" onclick="toast('User invite sent','ok')">+ Add User</button></div>
+      <table><thead><tr><th>Name</th><th>Component</th><th>Role</th><th>Status</th></tr></thead><tbody>
+        <tr><td>M. Torres</td><td>APHIS</td><td><span class="b b-b">FOIA Officer</span></td><td><span class="b b-g">Active</span></td></tr>
+        <tr><td>K. Johnson</td><td>FNS</td><td><span class="b b-p">Attorney</span></td><td><span class="b b-g">Active</span></td></tr>
+        <tr><td>D. Patel</td><td>FSA</td><td><span class="b b-b">FOIA Officer</span></td><td><span class="b b-g">Active</span></td></tr>
+        <tr><td>S. Kim</td><td>NRCS</td><td><span class="b b-b">FOIA Officer</span></td><td><span class="b b-g">Active</span></td></tr>
+        <tr><td>L. Washington</td><td>OGC</td><td><span class="b b-o">Supervisor</span></td><td><span class="b b-g">Active</span></td></tr>
+      </tbody></table>
     </div>
-    <div class="content-area">
-      <div class="filter-panel">
-        <div class="filter-panel-header"><span>Sources</span></div>
-        <div class="filter-section">
-          <div class="filter-section-label">Repository</div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" checked> AG Records</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" checked> SharePoint</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" checked> Email Archive</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox"> Shared Drive</label>
-          </div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Date Range</div>
-          <div class="filter-select">Last 2 Years <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-section">
-          <div class="filter-section-label">Component</div>
-          <div class="filter-select">APHIS <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="filter-actions"><button class="btn-primary">Apply</button><button class="btn-ghost">Clear</button></div>
-      </div>
-      <div class="main">
-        <div class="search-hero">
-          <div style="font-size:12px;color:#6b7280;margin-bottom:10px">Searching across: AG Records · SharePoint · Email Archive</div>
-          <div class="search-bar">
-            <input class="search-input-lg" type="text" value="pesticide residue inspection reports imported produce 2024 2025">
-            <button class="search-btn">Search</button>
-          </div>
-          <div class="search-tags">
-            <span style="font-size:11px;color:#6b7280;margin-right:4px">Suggested refinements:</span>
-            <span class="search-tag">+ limit to PPQ division</span>
-            <span class="search-tag">+ enforcement actions only</span>
-            <span class="search-tag">+ exclude draft documents</span>
-          </div>
-          <div style="margin-top:10px;padding:8px 12px;background:#fef3c7;border-radius:6px;font-size:11px;color:#92400e">
-            <b>AI Query Note:</b> This query may be over-broad — estimated 2,400+ responsive documents. Consider adding commodity type (e.g., "fresh vegetables") or country of origin to narrow results.
-          </div>
-        </div>
-
-        <div style="font-size:12px;color:#6b7280;margin-bottom:10px"><b>847 results</b> across 3 sources — sorted by relevance</div>
-
-        <div class="result-card">
-          <div class="result-title">APHIS_PPQ_Annual_Pesticide_Residue_Report_FY2024.pdf</div>
-          <div class="result-meta">AG Records · PPQ Division · Modified Mar 15, 2025 · 148 pages</div>
-          <div class="result-snippet">...quarterly <mark>pesticide residue</mark> monitoring results for <mark>imported produce</mark> commodities including fresh vegetables, citrus, and tropical fruits. <mark>Inspection</mark> data covers all ports of entry...</div>
-          <div style="display:flex;gap:8px;margin-top:8px"><span class="badge badge-orange">Likely Responsive</span><span class="badge badge-purple">b(4) Review Needed</span></div>
-        </div>
-        <div class="result-card">
-          <div class="result-title">Internal Memo: PPQ Compliance Actions Q2 FY2025</div>
-          <div class="result-meta">SharePoint · APHIS Legal · Modified Jun 3, 2025 · 12 pages</div>
-          <div class="result-snippet">...summary of <mark>enforcement actions</mark> taken against importers with repeated <mark>pesticide residue</mark> violations. Includes company names, violation levels, and corrective action timelines...</div>
-          <div style="display:flex;gap:8px;margin-top:8px"><span class="badge badge-green">Likely Responsive</span><span class="badge badge-red">b(4) Applies — Trade Secrets</span></div>
-        </div>
-        <div class="result-card">
-          <div class="result-title">RE: Importer Violation Review — Produce Season 2025</div>
-          <div class="result-meta">Email Archive · From: J. Harmon → M. Torres · Apr 22, 2025</div>
-          <div class="result-snippet">...attached you'll find the <mark>inspection</mark> logs from the San Diego port. Note the elevated <mark>residue</mark> levels on the Chilean grape lot — flagging for your <mark>report</mark>...</div>
-          <div style="display:flex;gap:8px;margin-top:8px"><span class="badge badge-orange">Likely Responsive</span><span class="badge badge-gray">b(6) — Sender Info</span></div>
-        </div>
-      </div>
+    <div class="card"><div class="card-title" style="margin-bottom:12px">Integration Status</div>
+      <div id="integrations"></div>
     </div>
   </div>
 </div>
-
-<!-- ════════════════════════════ SCREEN: AI HUB ════════════════════════════ -->
-<div class="screen" id="screen-ai">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">AI Hub</div>
-      <div class="tab">Model Performance</div>
-      <div class="topbar-right">
-        <div class="select-pill">All Components <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-      </div>
-    </div>
-    <div class="content-area">
-      <div class="main">
-        <!-- AI KPI Row -->
-        <div class="kpi-row">
-          <div class="kpi-card"><div class="kpi-label">Requests Auto-Routed</div><div class="kpi-value-row"><span class="kpi-value">94%</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">Officer acceptance rate</div></div>
-          <div class="kpi-card"><div class="kpi-label">Duplicates Detected</div><div class="kpi-value-row"><span class="kpi-value">312</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">FY26 YTD — auto-flagged</div></div>
-          <div class="kpi-card"><div class="kpi-label">PII Instances Found</div><div class="kpi-value-row"><span class="kpi-value">8,441</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">AI first pass</div></div>
-          <div class="kpi-card"><div class="kpi-label">Redaction Time Saved</div><div class="kpi-value-row"><span class="kpi-value">41%</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">vs. manual baseline</div></div>
-          <div class="kpi-card"><div class="kpi-label">Model Confidence</div><div class="kpi-value-row"><span class="kpi-value">91%</span><span class="kpi-badge ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-date">Routing model avg</div></div>
-        </div>
-
-        <div class="chart-row">
-          <!-- Pending AI Review -->
-          <div class="chart-card">
-            <div class="chart-title">Pending AI Review Items</div>
-            <div class="chart-subtitle">Actions requiring human review</div>
-            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #fcd34d;border-radius:6px;background:#fef9c3">
-                <div><div style="font-size:12px;font-weight:600;color:#92400e">PII Flags — High Confidence</div><div style="font-size:11px;color:#b45309;margin-top:2px">4 documents across 3 cases — SSNs, personal emails detected</div></div>
-                <span class="badge badge-orange">47 items</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #fca5a5;border-radius:6px;background:#fee2e2">
-                <div><div style="font-size:12px;font-weight:600;color:#991b1b">b(4) Exemption Suggestions</div><div style="font-size:11px;color:#b91c1c;margin-top:2px">Trade secret and commercial info flagged in 2 cases</div></div>
-                <span class="badge badge-red">23 items</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff">
-                <div><div style="font-size:12px;font-weight:600;color:#1d4ed8">Duplicate Matches</div><div style="font-size:11px;color:#2563eb;margin-top:2px">3 new requests flagged as similar to existing open cases</div></div>
-                <span class="badge badge-blue">3 items</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb">
-                <div><div style="font-size:12px;font-weight:600;color:#374151">Query Optimization Suggestions</div><div style="font-size:11px;color:#6b7280;margin-top:2px">8 searches flagged as over-broad by AI</div></div>
-                <span class="badge badge-gray">8 items</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Model Performance -->
-          <div class="chart-card">
-            <div class="chart-title">Routing Model Performance</div>
-            <div class="chart-subtitle">Acceptance rate by component — last 90 days</div>
-            <div style="margin-top:14px">
-              <div class="stat-row"><div class="stat-bar-label">FSA</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:96%;"><span style="font-size:9px;color:white">96%</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">APHIS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:94%;"><span style="font-size:9px;color:white">94%</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">FNS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:91%;"><span style="font-size:9px;color:white">91%</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">NRCS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:88%;"><span style="font-size:9px;color:white">88%</span></div></div></div>
-              <div class="stat-row" style="margin-top:6px"><div class="stat-bar-label">AMS</div><div class="stat-bar-track"><div class="stat-bar-fill" style="width:85%;"><span style="font-size:9px;color:white">85%</span></div></div></div>
-            </div>
-            <div style="margin-top:14px;padding:8px;background:#f0fdf4;border-radius:6px;font-size:11px;color:#15803d">
-              Model last retrained: Apr 1, 2026 · Next scheduled: May 1, 2026
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
+</div>
 </div>
 
-<!-- ════════════════════════════ SCREEN: ADMIN ════════════════════════════ -->
-<div class="screen" id="screen-admin">
-  <div class="shell">
-    <div class="topbar">
-      <span class="app-title">C3 AI FOIA Management</span>
-      <div class="tab active">Admin</div>
-      <div class="tab">Users</div>
-      <div class="tab">Integrations</div>
-      <div class="tab">Audit</div>
+<!-- ═══════════ MODALS ═══════════ -->
+<!-- STOP CLOCK -->
+<div class="overlay" id="modal-stopclock">
+<div class="modal">
+  <div class="modal-title">Stop the Statutory Clock <span class="modal-close" onclick="closeModal()">×</span></div>
+  <div style="font-size:12px;color:var(--t2);margin-bottom:14px">This will pause the 21-business-day response deadline. The clock will resume when you manually restart it or the requester responds.</div>
+  <div class="fg" style="margin-bottom:10px"><div class="flbl">Reason</div>
+    <select class="fval e" id="clock-reason">
+      <option>Awaiting Requester Clarification — Scope</option>
+      <option>Awaiting Requester Clarification — Fee</option>
+      <option>Awaiting Fee Agreement</option>
+      <option>Unusual Circumstances</option>
+    </select>
+  </div>
+  <div class="fg"><div class="flbl">Notes (optional)</div><textarea class="fval e" rows="3" placeholder="Add context for audit log..."></textarea></div>
+  <div class="modal-footer"><button class="btn btn-gh" onclick="closeModal()">Cancel</button><button class="btn btn-r" onclick="stopClock()">Stop Clock</button></div>
+</div>
+</div>
+
+<!-- TRANSFER -->
+<div class="overlay" id="modal-transfer">
+<div class="modal">
+  <div class="modal-title">Transfer Case <span class="modal-close" onclick="closeModal()">×</span></div>
+  <div class="fg" style="margin-bottom:10px"><div class="flbl">Transfer To</div>
+    <select class="fval e"><option>FSA — FOIA Office</option><option>FNS — FOIA Office</option><option>NRCS — FOIA Office</option><option>OGC — Central</option><option>DOJ (Referral)</option></select>
+  </div>
+  <div class="fg" style="margin-bottom:10px"><div class="flbl">Reason</div>
+    <select class="fval e"><option>Subject matter outside component scope</option><option>Requester clarified — different agency</option><option>Referral to another federal agency</option><option>Consolidation with existing case</option></select>
+  </div>
+  <div class="fg"><div class="flbl">Notes</div><textarea class="fval e" rows="2" placeholder="Transfer notes..."></textarea></div>
+  <div class="modal-footer"><button class="btn btn-gh" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="doTransfer()">Transfer Case</button></div>
+</div>
+</div>
+
+<!-- INTAKE WIZARD -->
+<div class="overlay" id="modal-intake">
+<div class="modal" style="width:560px;max-height:90vh;overflow-y:auto">
+  <div class="modal-title">New FOIA Request — Intake <span class="modal-close" onclick="closeModal()">×</span></div>
+  <div class="wiz-prog" id="wiz-prog">
+    <div class="wiz-dot on" id="wd-1">1</div><div class="wiz-line" id="wl-1"></div>
+    <div class="wiz-dot" id="wd-2">2</div><div class="wiz-line" id="wl-2"></div>
+    <div class="wiz-dot" id="wd-3">3</div>
+  </div>
+  <!-- Step 1 -->
+  <div class="wiz-step on" id="wiz-1">
+    <div style="font-size:12px;font-weight:600;margin-bottom:12px">Step 1 — Requester Information</div>
+    <div class="fg2">
+      <div class="fg"><div class="flbl">Requester Name</div><input class="fval e" type="text" placeholder="Full name or organization" id="in-name"></div>
+      <div class="fg"><div class="flbl">Requester Type</div><select class="fval e" id="in-rtype"><option>Individual</option><option>Media / News</option><option>Non-profit</option><option>Commercial</option><option>Government</option></select></div>
+      <div class="fg"><div class="flbl">Email</div><input class="fval e" type="email" placeholder="email@example.com" id="in-email"></div>
+      <div class="fg"><div class="flbl">Submission Channel</div><select class="fval e"><option>USDA ePortal</option><option>Email</option><option>USPS Mail</option><option>Fax</option></select></div>
     </div>
-    <div class="content-area">
-      <div class="main">
-        <div class="chart-row">
-          <div class="chart-card">
-            <div class="chart-title">User Management</div>
-            <div class="chart-subtitle" style="margin-bottom:10px">Active platform users — 214 total</div>
-            <div class="table-actions" style="margin-bottom:10px"><input class="search-input" type="text" placeholder="Search users..."><button class="btn-primary" style="margin-left:8px">+ Add User</button></div>
-            <table>
-              <thead><tr><th>Name</th><th>Component</th><th>Role</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>M. Torres</td><td>APHIS</td><td><span class="badge badge-blue">FOIA Officer</span></td><td><span class="badge badge-green">Active</span></td></tr>
-                <tr><td>K. Johnson</td><td>FNS</td><td><span class="badge badge-purple">Attorney</span></td><td><span class="badge badge-green">Active</span></td></tr>
-                <tr><td>D. Patel</td><td>FSA</td><td><span class="badge badge-blue">FOIA Officer</span></td><td><span class="badge badge-green">Active</span></td></tr>
-                <tr><td>S. Kim</td><td>NRCS</td><td><span class="badge badge-blue">FOIA Officer</span></td><td><span class="badge badge-green">Active</span></td></tr>
-                <tr><td>L. Washington</td><td>OGC</td><td><span class="badge badge-orange">Supervisor</span></td><td><span class="badge badge-green">Active</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Integration Status</div>
-            <div class="chart-subtitle" style="margin-bottom:12px">Connected systems health check</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">AG Records (FedRAMP)</span><span class="badge badge-green">● Connected</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">SharePoint / OneDrive</span><span class="badge badge-green">● Connected</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">FOIA.gov API</span><span class="badge badge-green">● Connected</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">USDA ePortal (Intake)</span><span class="badge badge-green">● Connected</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid #fcd34d;border-radius:6px;background:#fef9c3"><span style="font-size:12px;font-weight:500">FSA FOIA CAP System</span><span class="badge badge-orange">⚠ Migration Pending</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:6px"><span style="font-size:12px;font-weight:500">PST / Email Archive</span><span class="badge badge-gray">○ Not Configured</span></div>
-            </div>
-          </div>
+    <div class="modal-footer"><button class="btn btn-gh" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="wizNext(2)">Next →</button></div>
+  </div>
+  <!-- Step 2 -->
+  <div class="wiz-step" id="wiz-2">
+    <div style="font-size:12px;font-weight:600;margin-bottom:12px">Step 2 — Request Description</div>
+    <div class="fg" style="margin-bottom:10px"><div class="flbl">Component</div><select class="fval e" id="in-comp"><option>FSA</option><option>APHIS</option><option>FNS</option><option>NRCS</option><option>RD</option><option>ARS</option><option>AMS</option><option>Unsure — AI will route</option></select></div>
+    <div class="fg" style="margin-bottom:10px"><div class="flbl">Request Description *</div><textarea class="fval e" rows="5" id="in-desc" placeholder="Describe the records being sought..."></textarea></div>
+    <div class="fg"><div class="flbl">Date Range of Records</div><div style="display:flex;gap:8px"><input class="fval e" type="text" placeholder="From (e.g. Jan 1, 2023)" style="flex:1"><input class="fval e" type="text" placeholder="To (e.g. Dec 31, 2024)" style="flex:1"></div></div>
+    <div class="modal-footer"><button class="btn btn-gh" onclick="wizBack(1)">← Back</button><button class="btn btn-p" onclick="wizNext(3)">Run AI Analysis →</button></div>
+  </div>
+  <!-- Step 3 — AI Scoring -->
+  <div class="wiz-step" id="wiz-3">
+    <div style="font-size:12px;font-weight:600;margin-bottom:12px">Step 3 — AI Analysis</div>
+    <div id="ai-loading" style="text-align:center;padding:20px">
+      <div class="pulse" style="font-size:13px;color:var(--blue)">Analyzing request...</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--t2)">Classifying complexity · Detecting duplicates · Suggesting routing</div>
+      <div class="sbar" style="margin:12px auto;width:80%"><div class="sbar-f" id="ai-progress" style="width:0%"></div></div>
+    </div>
+    <div id="ai-result" style="display:none">
+      <div class="ai-c">
+        <div class="ai-ttl">AI Analysis Complete</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px">
+          <div><div style="color:var(--t2);margin-bottom:3px">Complexity Score</div><div class="score-label" id="new-score" style="color:var(--blue)">—</div><div class="sbar"><div class="sbar-f" id="new-score-bar" style="width:0%"></div></div><div id="new-track" style="font-size:10px;font-weight:600;color:#b45309"></div></div>
+          <div><div style="color:var(--t2);margin-bottom:3px">Route To</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="new-routing">—</div><div id="new-conf" style="color:var(--t2);margin-top:2px;font-size:10px"></div></div>
+          <div><div style="color:var(--t2);margin-bottom:3px">Duplicates</div><div style="font-weight:600;font-size:12px;margin-top:3px" id="new-dup">Checking...</div></div>
         </div>
       </div>
+      <div class="fg" style="margin-top:10px"><div class="flbl">Assigned Officer</div><select class="fval e" id="new-officer"><option>M. Torres</option><option>K. Johnson</option><option>D. Patel</option><option>S. Kim</option><option>Unassigned</option></select></div>
     </div>
+    <div class="modal-footer" id="wiz3-footer" style="display:none"><button class="btn btn-gh" onclick="wizBack(2)">← Back</button><button class="btn btn-g" onclick="createCase()">Create Case</button></div>
   </div>
 </div>
+</div>
+
+<div id="toast"></div>
 
 <script>
-  function showScreen(name) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('screen-' + name).classList.add('active');
-    const map = {dashboard:0,workload:1,casedetail:2,documents:2,search:3,analytics:4,ai:5,admin:6};
-    const navItems = document.querySelectorAll('.nav-item');
-    if (map[name] !== undefined) navItems[map[name]].classList.add('active');
-  }
+// ═══════════════════════════ REAL DATA ═══════════════════════════
+const D = {
+  annual:[
+    {fy:'FY2022',received:17069,processed:17166,backlog:733},
+    {fy:'FY2023',received:16605,processed:16605,backlog:700},
+    {fy:'FY2024',received:24722,processed:21113,backlog:2270},
+  ],
+  components:[
+    {name:'FSA',full:'Farm Service Agency',area:'FPAC',received:16698,pct:67.5},
+    {name:'APHIS',full:'Animal & Plant Health Inspection',area:'MRP',received:1815,pct:7.3},
+    {name:'FNS',full:'Food & Nutrition Service',area:'Other',received:1449,pct:5.9},
+    {name:'NRCS',full:'Natural Resources Conservation',area:'FPAC',received:788,pct:3.2},
+    {name:'RD',full:'Rural Development',area:'RD',received:744,pct:3.0},
+    {name:'ARS',full:'Agricultural Research Service',area:'REE',received:516,pct:2.1},
+    {name:'AMS',full:'Agricultural Marketing Service',area:'MRP',received:430,pct:1.7},
+    {name:'Other',full:'All Other Components',area:'—',received:2282,pct:9.2},
+  ],
+  bench:[
+    {agency:'HHS',received:51800,processed:49271,backlog:12685,simple:10.0,complex:21.35},
+    {agency:'DOT',received:18345,processed:16080,backlog:8048,simple:null,complex:null},
+    {agency:'DOD',received:61858,processed:57662,backlog:null,simple:null,complex:null},
+    {agency:'USDA',received:24722,processed:21113,backlog:2270,simple:17.4,complex:null},
+  ],
+  integrations:[
+    {name:'AG Records (FedRAMP Moderate)',status:'ok',label:'Connected'},
+    {name:'SharePoint / OneDrive',status:'ok',label:'Connected'},
+    {name:'FOIA.gov REST API',status:'ok',label:'Connected'},
+    {name:'USDA ePortal (Intake)',status:'ok',label:'Connected'},
+    {name:'FSA FOIA CAP System',status:'warn',label:'Migration Pending'},
+    {name:'PST / Email Archive',status:'off',label:'Not Configured'},
+  ],
+  datasets:[
+    {id:1,name:'FSA Farm Payment Files',agency:'FSA',area:'FPAC',format:'Excel',relevance:'CRITICAL',url:'https://www.fsa.usda.gov/tools/informational/freedom-information-act-foia/electronic-reading-room/frequently-requested/payment-files',desc:'Annual flat files of every FSA Farm Bill program payment recipient — name, address, amounts. Source for EWG Farm Subsidy Database.',updated:'2025',api:false},
+    {id:2,name:'FSA Crop Acreage Data',agency:'FSA',area:'FPAC',format:'CSV',relevance:'HIGH',url:'https://www.fsa.usda.gov/tools/informational/freedom-information-act-foia/electronic-reading-room/frequently-requested/crop-acreage-data',desc:'Certified crop acreage by farm/crop/county for ARC/PLC/disaster programs. Monthly snapshots.',updated:'Jan 2025',api:false},
+    {id:3,name:'FSA ARC/PLC Program Data',agency:'FSA',area:'FPAC',format:'Excel',relevance:'HIGH',url:'https://www.fsa.usda.gov/resources/programs/arc-plc/program-data',desc:'Program year data: payment rates, market year average prices, benchmark yields, PLC yields/base acres by county.',updated:'Feb 2026',api:false},
+    {id:4,name:'FSA AFIDA Foreign Land Ownership',agency:'FSA',area:'FPAC',format:'Excel',relevance:'CRITICAL',url:'https://www.fsa.usda.gov/resources/economic-policy-analysis/afida/annual-reports-underlying-data',desc:'All AFIDA filings: foreign owner country/acres/land type/state/county/transaction type. Proactively posted since 2023 Congressional mandate.',updated:'Dec 2024',api:false},
+    {id:5,name:'FSA CRP Statistics',agency:'FSA',area:'FPAC',format:'Excel',relevance:'HIGH',url:'https://www.fsa.usda.gov/tools/informational/reports/conservation-statistics/crp',desc:'CRP enrollment and rental payments by state/county 1986–2024, contract expirations, practices, rental rates.',updated:'Nov 2025',api:false},
+    {id:6,name:'NRCS Financial Assistance (EQIP/CSP/RCPP)',agency:'NRCS',area:'FPAC',format:'CSV',relevance:'HIGH',url:'https://www.farmers.gov/data/financial-assistance-download',desc:'Conservation program contracts, dollars obligated, practices applied, demographics, watershed data. FY2014–present.',updated:'FY2025 YTD',api:true},
+    {id:7,name:'NRCS Conservation Program Data (RCA)',agency:'NRCS',area:'FPAC',format:'Excel',relevance:'MEDIUM',url:'https://www.nrcs.usda.gov/rca-data-downloads',desc:'RCA program financials and conservation practices applied by program/FY/land use/conservation measure.',updated:'FY2024',api:false},
+    {id:8,name:'Forest Service Range Allotment Boundaries',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'HIGH',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=allotment',desc:'National grazing allotment boundaries on NFS lands with RIMS attribute data. Refreshed daily.',updated:'Apr 2026',api:true},
+    {id:9,name:'Forest Service Timber Harvest Activities',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'HIGH',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=timber',desc:'Planned and accomplished timber harvest areas from FACTS database across all NFS lands.',updated:'Apr 2026',api:true},
+    {id:10,name:'Forest Service Timber Sale Project Areas',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'HIGH',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=timber',desc:'Polygon boundaries of all Timber Sale project areas on NFS lands from FACTS/NRM.',updated:'Apr 2026',api:true},
+    {id:11,name:'NASS QuickStats Full Database',agency:'NASS',area:'REE',format:'API',relevance:'HIGH',url:'https://www.nass.usda.gov/datasets/',desc:'All NASS published ag statistics: crop production, prices, livestock, demographics, economics. Daily bulk updates. 1+ GB.',updated:'Daily',api:true},
+    {id:12,name:'ERS ARMS Financial Survey',agency:'ERS',area:'REE',format:'API',relevance:'MEDIUM',url:'https://www.ers.usda.gov/data-products/arms-farm-financial-and-crop-production-practices',desc:'Annual survey on farm financial conditions, production practices, and resource use.',updated:'2024',api:true},
+    {id:13,name:'ERS Farm Income & Wealth Statistics',agency:'ERS',area:'REE',format:'Excel',relevance:'MEDIUM',url:'https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics',desc:'US and state-level farm income, cash receipts, expenses, government payments, wealth. 2024 actuals + 2025–2026 forecasts.',updated:'2025',api:false},
+    {id:14,name:'NRCS SSURGO Soils Database',agency:'NRCS',area:'FPAC',format:'API',relevance:'MEDIUM',url:'https://sdmdataaccess.nrcs.usda.gov/',desc:'Most detailed national soils DB. Soil properties for entire US via Web Soil Survey and T-SQL API.',updated:'Continuous',api:true},
+    {id:15,name:'FSA Farm Loan Program Reports',agency:'FSA',area:'FPAC',format:'Excel',relevance:'HIGH',url:'https://www.fsa.usda.gov/tools/informational/reports/farm-loan-programs',desc:'Annual/quarterly farm loan data: direct/guaranteed loan obligations by state, beginning/veteran farmer lending.',updated:'FY2024',api:false},
+    {id:16,name:'NASS Census of Agriculture 2022',agency:'NASS',area:'REE',format:'CSV',relevance:'HIGH',url:'https://www.nass.usda.gov/datasets/',desc:'Complete 2022 Census: every US farm and ranch. Operator demographics, finances, crop/livestock production, government payments. 295 MB.',updated:'Feb 2024',api:false},
+    {id:17,name:'USDA Geospatial Data Gateway',agency:'NRCS',area:'FPAC',format:'Shapefile',relevance:'MEDIUM',url:'https://datagateway.nrcs.usda.gov/',desc:'100+ vector/raster datasets: soils, elevation, climate, hydrography, land use, orthoimagery.',updated:'Continuous',api:false},
+    {id:18,name:'Forest Service FIA Landcover Estimates',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'MEDIUM',url:'https://data.fs.usda.gov/geodata/edw/',desc:'Forest area estimates by county: forest area, timberland, merchantable volume, biomass, carbon, sawlog volume.',updated:'2018',api:true},
+    {id:19,name:'FSA Emergency Conservation Program',agency:'FSA',area:'FPAC',format:'Excel',relevance:'MEDIUM',url:'https://www.fsa.usda.gov/online-services/fsa-online-data-resources',desc:'Monthly ECP reports by disaster type and state; payments by state and practice.',updated:'Ongoing',api:false},
+    {id:20,name:'FSA Dairy Margin Coverage Data',agency:'FSA',area:'FPAC',format:'Excel',relevance:'MEDIUM',url:'https://www.fsa.usda.gov/online-services/fsa-online-data-resources',desc:'DMC program enrollment, production history, and payment data. Weekly reports 2019–2021.',updated:'Ongoing',api:false},
+    {id:21,name:'FSA Market Facilitation Program Rates',agency:'FSA',area:'FPAC',format:'Excel',relevance:'MEDIUM',url:'https://www.fsa.usda.gov/online-services/fsa-online-data-resources',desc:'MFP payment rates by commodity for 2018–2019 trade-war-era payments.',updated:'Historical',api:false},
+    {id:22,name:'FSA CFAP 2.0 Payment Data',agency:'FSA',area:'FPAC',format:'Excel',relevance:'MEDIUM',url:'https://www.fsa.usda.gov/online-services/fsa-online-data-resources',desc:'CFAP 2.0 COVID-19 relief payments by state/commodity/producer type.',updated:'Historical',api:false},
+    {id:23,name:'FSA Commodity Loan & Price Support',agency:'FSA',area:'FPAC',format:'Excel',relevance:'MEDIUM',url:'https://www.fsa.usda.gov/online-services/fsa-online-data-resources',desc:'Historical commodity loan activity, daily LDP/PCP rates, county PCP rates, weekly commodity rates.',updated:'Weekly',api:false},
+    {id:24,name:'Forest Service Range Pasture Boundaries',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'HIGH',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=allotment',desc:'Area boundaries of pastures within livestock grazing allotments on NFS lands.',updated:'Regular',api:true},
+    {id:25,name:'Forest Service CFLRP Activities',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'MEDIUM',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=timber',desc:'CFLR Program project accomplishments and High Priority Restoration projects from FACTS.',updated:'Apr 2026',api:true},
+    {id:26,name:'Forest Service Silviculture TSI Activities',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'MEDIUM',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=timber',desc:'Areas treated for silviculture timber stand improvement from FACTS.',updated:'Apr 2026',api:true},
+    {id:27,name:'Forest Service K-V Fund Activities',agency:'USFS',area:'NRE',format:'Shapefile',relevance:'MEDIUM',url:'https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=timber',desc:'Activities funded by K-V deposits from timber purchasers for reforestation and habitat improvement.',updated:'Apr 2026',api:true},
+    {id:28,name:'FSA Frequently Released Records Index',agency:'FSA',area:'FPAC',format:'HTML',relevance:'CRITICAL',url:'https://www.fsa.usda.gov/tools/informational/freedom-information-act-foia/electronic-reading-room/frequently-requested',desc:'Master index of all FSA proactively released FOIA records: payment files, crop acreage, ARC-PLC, CRP, AFIDA.',updated:'Ongoing',api:false},
+    {id:29,name:'NRCS Conservation Financial Assistance Download',agency:'NRCS',area:'FPAC',format:'CSV',relevance:'HIGH',url:'https://www.farmers.gov/data/financial-assistance-download',desc:'6 downloadable CSVs: contracts by county, practices, demographics, watershed. FY2014–FY2025.',updated:'FY2025 YTD',api:false},
+    {id:30,name:'FSA ARC/PLC Base Acreage & Yields',agency:'FSA',area:'FPAC',format:'Excel',relevance:'HIGH',url:'https://www.fsa.usda.gov/resources/programs/arc-plc/program-data',desc:'Base acres and county/state payment rates used in ARC-CO, ARC-IC, and PLC calculations.',updated:'2026',api:false},
+  ],
+};
+
+// ═══════════════════════════ CASES DATA ═══════════════════════════
+const CASES = [
+  {id:'FNS-2026-00892',req:'Center on Budget & Policy Priorities',comp:'FNS',desc:'SNAP waivers issued during COVID-19 pandemic',recv:'Apr 5',due:'May 1',days:-2,track:'Complex',status:'Overdue',score:91,officer:'K. Johnson'},
+  {id:'APHIS-2026-01103',req:'Environmental Working Group',comp:'APHIS',desc:'Pesticide residue inspection reports imported produce',recv:'Apr 8',due:'May 6',days:12,track:'Complex',status:'Perfection',score:88,officer:'M. Torres'},
+  {id:'APHIS-2026-01099',req:'New York Times / Media',comp:'APHIS',desc:'H5N1 avian flu inspection logs and enforcement actions',recv:'Apr 9',due:'May 7',days:13,track:'Complex',status:'AI Flagged',score:94,officer:'M. Torres'},
+  {id:'FSA-2026-04821',req:'A. Chen / Reuters',comp:'FSA',desc:'Farm loan payment records FY2024 by county',recv:'Apr 10',due:'May 8',days:14,track:'Simple',status:'In Review',score:72,officer:'D. Patel'},
+  {id:'FSA-2026-04819',req:'J. Williams / Individual',comp:'FSA',desc:'Crop insurance payout data for Iowa FY2023',recv:'Apr 7',due:'May 5',days:11,track:'Simple',status:'Awaiting Docs',score:45,officer:'D. Patel'},
+  {id:'NRCS-2026-00441',req:'B. Martinez / Individual',comp:'NRCS',desc:'Conservation easement contracts EQIP FY2022-2024',recv:'Apr 3',due:'Apr 29',days:3,track:'Simple',status:'In Review',score:38,officer:'S. Kim'},
+  {id:'AMS-2026-00301',req:'Food & Water Watch',comp:'AMS',desc:'Meat grading audit reports Q3 FY2025',recv:'Apr 11',due:'May 9',days:15,track:'Complex',status:'In Review',score:79,officer:'Unassigned'},
+  {id:'FSA-2026-04815',req:'R. Thompson / Individual',comp:'FSA',desc:'FSN parcel data for Champaign County IL',recv:'Apr 1',due:'Apr 27',days:1,track:'Simple',status:'Overdue',score:61,officer:'K. Johnson'},
+  {id:'APHIS-2026-01088',req:'Earthjustice',comp:'APHIS',desc:'Wildlife Services lethal control program records',recv:'Apr 2',due:'Apr 28',days:2,track:'Complex',status:'In Review',score:83,officer:'M. Torres'},
+  {id:'FSA-2026-04800',req:'Farm Aid / Advocacy',comp:'FSA',desc:'AFIDA foreign land ownership filings 2023-2025',recv:'Mar 28',due:'Apr 23',days:-5,track:'Simple',status:'Overdue',score:55,officer:'D. Patel'},
+  {id:'FNS-2026-00881',req:'USDA OIG (Internal)',comp:'FNS',desc:'WIC vendor audit records FY2024 Region 5',recv:'Apr 6',due:'May 4',days:10,track:'Complex',status:'In Review',score:66,officer:'K. Johnson'},
+  {id:'NRCS-2026-00438',req:'American Farmland Trust',comp:'NRCS',desc:'ACEP-ALE easement agreements by state FY2022',recv:'Mar 25',due:'Apr 20',days:-8,track:'Complex',status:'Overdue',score:74,officer:'S. Kim'},
+  {id:'RD-2026-00219',req:'Rural Community Assistance',comp:'RD',desc:'Rural housing loan approvals and denials FY2024',recv:'Apr 9',due:'May 7',days:13,track:'Simple',status:'Perfection',score:42,officer:'Unassigned'},
+  {id:'FSA-2026-04795',req:'ProPublica / Media',comp:'FSA',desc:'ARC-CO payment rates all counties FY2024',recv:'Mar 30',due:'Apr 25',days:-3,track:'Simple',status:'Closed',score:58,officer:'D. Patel'},
+  {id:'APHIS-2026-01075',req:'Humane Society',comp:'APHIS',desc:'Animal Welfare Act inspection reports 2024-2025',recv:'Mar 20',due:'Apr 15',days:-10,track:'Complex',status:'Closed',score:70,officer:'M. Torres'},
+];
+
+// ═══════════════════════════ NAV ═══════════════════════════
+function nav(name) {
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  const map={dash:'dash',work:'work',case:'case',search:'search',datasets:'search',analytics:'analytics',ai:'ai',admin:'admin'};
+  const scr=document.getElementById('scr-'+name)||document.getElementById('scr-'+map[name]);
+  if(scr)scr.classList.add('on');
+  const ni=document.getElementById('ni-'+map[name]);
+  if(ni)ni.classList.add('on');
+  if(name==='dash')renderDash();
+  if(name==='analytics')renderAnalytics();
+  if(name==='ai')renderAI();
+  if(name==='search')runSearch();
+  if(name==='datasets')renderDatasets();
+  if(name==='admin')renderAdmin();
+  if(name==='work')renderWork();
+}
+
+// ═══════════════════════════ HELPERS ═══════════════════════════
+function badge(status){const m={'In Review':'b-g','Perfection':'b-o','Awaiting Docs':'b-b','Overdue':'b-r','Closed':'b-gr','AI Flagged':'b-p','Complex':'b-o','Simple':'b-b'};return m[status]||'b-gr';}
+function daysHtml(d){if(d<0)return`<span class="db">OVERDUE</span>`;if(d<=5)return`<span class="db">+${d}</span>`;if(d<=12)return`<span class="dw">+${d}</span>`;return`<span class="dok">+${d}</span>`;}
+function scoreColor(s){if(s>=85)return'#b91c1c';if(s>=65)return'#b45309';return'#15803d';}
+function fmt(n){return n.toLocaleString();}
+function toast(msg,type=''){const t=document.createElement('div');t.className='toast-i '+(type==='ok'?'ok':type==='err'?'err':'');t.textContent=msg;document.getElementById('toast').appendChild(t);setTimeout(()=>t.remove(),3000);}
+
+// ═══════════════════════════ DASHBOARD ═══════════════════════════
+function renderDash(){
+  const fy=document.getElementById('dash-fy')||{value:'FY2024'};
+  const d=D.annual.find(a=>a.fy===(fy.value||'FY2024'))||D.annual[2];
+  const rate=Math.round(d.processed/d.received*100);
+  document.getElementById('kpi-row').innerHTML=`
+    <div class="kc"><div class="kl">Requests Received</div><div class="kvr"><span class="kv">${fmt(d.received)}</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">${d.fy}</div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="0,22 25,20 50,18 75,14 100,10" fill="none" stroke="#f59e0b" stroke-width="1.5"/></svg></div>
+    <div class="kc"><div class="kl">Processed / Closed</div><div class="kvr"><span class="kv">${fmt(d.processed)}</span><span class="kbadge ${rate>=95?'kb-ok':'kb-w'}"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">${rate}% close rate</div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="0,24 25,22 50,18 75,14 100,12" fill="none" stroke="#3aab7b" stroke-width="1.5"/></svg></div>
+    <div class="kc"><div class="kl">End-of-FY Backlog</div><div class="kvr"><span class="kv">${fmt(d.backlog)}</span><span class="kbadge ${d.backlog<500?'kb-ok':d.backlog<1000?'kb-w':'kb-b'}"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="ks">Target &lt;500</div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="0,18 25,20 50,22 75,18 100,24" fill="none" stroke="#ef4444" stroke-width="1.5"/></svg></div>
+    <div class="kc"><div class="kl">Overdue Cases</div><div class="kvr"><span class="kv">247</span><span class="kbadge kb-b"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="ks">Past 21-day deadline</div></div>
+    <div class="kc"><div class="kl">Duplicates Flagged</div><div class="kvr"><span class="kv">312</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">AI auto-detected</div></div>
+    <div class="kc"><div class="kl">Avg Simple Days</div><div class="kvr"><span class="kv">17.4</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">HHS benchmark: 10</div></div>`;
+  drawCompChart();drawTrendChart();renderDashTable();
+}
+function drawCompChart(){
+  const el=document.getElementById('comp-chart');
+  const comps=D.components.slice(0,7);
+  const max=comps[0].received;
+  const bw=230,bh=18,gap=6,ox=80,oy=12;
+  let html='';
+  comps.forEach((c,i)=>{
+    const y=oy+i*(bh+gap);
+    const w=Math.round(c.received/max*bw);
+    html+=`<rect x="${ox}" y="${y}" width="${w}" height="${bh}" fill="#3aab7b" rx="2"/>`;
+    html+=`<text x="${ox-4}" y="${y+bh/2+4}" text-anchor="end" font-size="10" fill="#6b7280">${c.name}</text>`;
+    html+=`<text x="${ox+w+4}" y="${y+bh/2+4}" font-size="10" fill="#374151" font-weight="600">${fmt(c.received)}</text>`;
+  });
+  el.innerHTML=html;
+}
+function drawTrendChart(){
+  const el=document.getElementById('trend-chart');
+  if(!el)return;
+  const pts=D.annual;const W=290,H=160,ox=35,oy=10,maxV=28000;
+  const x=(i)=>ox+i*(W/2);
+  const y=(v)=>oy+H-(v/maxV*H);
+  const recPts=pts.map((p,i)=>`${x(i)},${y(p.received)}`).join(' ');
+  const proPts=pts.map((p,i)=>`${x(i)},${y(p.processed)}`).join(' ');
+  let html=`<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy+H}" stroke="#e5e7eb" stroke-width="1"/>`;
+  [0,7000,14000,21000,28000].forEach(v=>{const yy=y(v);html+=`<line x1="${ox}" y1="${yy}" x2="${ox+W}" y2="${yy}" stroke="#f3f4f6" stroke-width="1"/>`;html+=`<text x="${ox-3}" y="${yy+4}" text-anchor="end" font-size="8.5" fill="#9ca3af">${v===0?'0':v/1000+'k'}</text>`;});
+  html+=`<polyline points="${recPts}" fill="none" stroke="#3aab7b" stroke-width="2.5" stroke-linejoin="round"/>`;
+  html+=`<polyline points="${proPts}" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
+  pts.forEach((p,i)=>{html+=`<circle cx="${x(i)}" cy="${y(p.received)}" r="4" fill="#3aab7b"/>`;html+=`<text x="${x(i)}" y="${oy+H+14}" text-anchor="middle" font-size="9" fill="#9ca3af">${p.fy}</text>`;});
+  html+=`<text x="${ox+4}" y="${oy+14}" font-size="9" fill="#3aab7b">● Received</text><text x="${ox+4}" y="${oy+26}" font-size="9" fill="#93c5fd">● Processed</text>`;
+  el.innerHTML=html;
+}
+function renderDashTable(){
+  const t=document.getElementById('dash-table');
+  if(!t)return;
+  t.innerHTML=CASES.slice(0,5).map(c=>`
+    <tr onclick="openCase('${c.id}')">
+      <td><b style="color:var(--blue)">${c.id}</b></td>
+      <td>${c.req}</td><td>${c.comp}</td><td>${c.recv}</td><td>${c.due}</td>
+      <td>${daysHtml(c.days)}</td>
+      <td><span class="b ${badge(c.track)}">${c.track}</span></td>
+      <td><span class="b ${badge(c.status)}">${c.status}</span></td>
+      <td><b style="color:${scoreColor(c.score)}">${c.score}</b></td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════ WORKLOAD ═══════════════════════════
+let workSort={col:'days',asc:true};
+function renderWork(){
+  const rows=getFilteredCases();
+  document.getElementById('work-count').textContent=`Active Cases — ${rows.length} shown`;
+  document.getElementById('work-table').innerHTML=rows.map(c=>`
+    <tr onclick="openCase('${c.id}')">
+      <td><b style="color:var(--blue)">${c.id}</b></td>
+      <td>${c.req}</td><td>${c.comp}</td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${c.desc}</td>
+      <td>${c.recv}</td><td>${c.due}</td>
+      <td>${daysHtml(c.days)}</td>
+      <td><span class="b ${badge(c.track)}">${c.track}</span></td>
+      <td><span class="b ${badge(c.status)}">${c.status}</span></td>
+      <td><b style="color:${scoreColor(c.score)}">${c.score}</b></td>
+      <td>${c.officer}</td>
+    </tr>`).join('');
+}
+function getFilteredCases(){
+  const comp=(document.getElementById('wk-comp')||{value:''}).value;
+  const status=(document.getElementById('wk-status')||{value:''}).value;
+  const track=(document.getElementById('wk-track')||{value:''}).value;
+  const user=(document.getElementById('wk-user')||{value:''}).value;
+  return CASES.filter(c=>
+    (!comp||c.comp===comp)&&
+    (!status||c.status===status)&&
+    (!track||c.track===track)&&
+    (!user||c.officer===user)
+  ).sort((a,b)=>workSort.asc?a[workSort.col]>b[workSort.col]?1:-1:a[workSort.col]<b[workSort.col]?1:-1);
+}
+function filterWork(){renderWork();}
+function clearWorkFilter(){['wk-comp','wk-status','wk-track','wk-user'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderWork();}
+function sortWork(col){workSort={col,asc:workSort.col===col?!workSort.asc:true};renderWork();}
+function filterWorkTable(q){
+  const rows=document.querySelectorAll('#work-table tr, #dash-table tr');
+  rows.forEach(r=>{r.style.display=q&&!r.textContent.toLowerCase().includes(q.toLowerCase())?'none':'';});
+}
+
+// ═══════════════════════════ CASE DETAIL ═══════════════════════════
+function openCase(id){
+  const c=CASES.find(x=>x.id===id)||CASES[1];
+  document.getElementById('case-breadcrumb').textContent=c.id;
+  document.getElementById('cd-num').textContent=c.id;
+  document.getElementById('cd-req').textContent=c.req;
+  document.getElementById('cd-comp').textContent=c.comp+' — FOIA Office';
+  document.getElementById('cd-recv').textContent=c.recv+', 2026';
+  document.getElementById('cd-due2').textContent=c.due+', 2026';
+  document.getElementById('case-due').textContent=c.due+', 2026';
+  document.getElementById('case-days-left').textContent=c.days>0?`${c.days} business days remaining`:'OVERDUE';
+  document.getElementById('case-score').textContent=c.score;
+  document.getElementById('case-score-bar').style.width=c.score+'%';
+  document.getElementById('case-track-label').textContent=c.score>=85?'HIGH — Complex Track':c.score>=65?'ELEVATED — Complex Track':'STANDARD — '+c.track+' Track';
+  document.getElementById('case-routing').textContent=c.comp+' — FOIA Office';
+  const s=document.getElementById('cd-status');s.className='b '+badge(c.status);s.textContent=c.status;
+  const tr=document.getElementById('cd-track');tr.className='b '+badge(c.track);tr.textContent=c.track;
+  caseTab('summary',document.querySelector('#case-tabs .dt'));
+  nav('case');
+}
+function caseTab(name,el){
+  document.querySelectorAll('.dt').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+  ['summary','docs','log','assign','appeal'].forEach(t=>{const d=document.getElementById('tab-'+t);if(d)d.style.display=t===name?'':'none';});
+}
+function closeCase(){toast('Case marked closed and removed from queue','ok');nav('work');}
+function simUpload(){toast('Document uploaded — queued for AI redaction pass','ok');}
+function simRedaction(){toast('AI redaction pass started — 312 pages queued...','ok');setTimeout(()=>toast('AI complete — 47 PII flags, 23 exemption suggestions ready for review','ok'),2500);}
+
+// ═══════════════════════════ SEARCH ═══════════════════════════
+const SEARCH_RESULTS=[
+  {title:'APHIS_PPQ_Annual_Pesticide_Residue_Report_FY2024.pdf',meta:'AG Records · PPQ Division · Mar 15, 2025 · 148 pages',snip:'...quarterly <mark>pesticide residue</mark> monitoring results for <mark>imported produce</mark> commodities. <mark>Inspection</mark> data covers all ports of entry...',tags:[['Likely Responsive','b-o'],['b(4) Review Needed','b-p']]},
+  {title:'Internal Memo: PPQ Compliance Actions Q2 FY2025',meta:'SharePoint · APHIS Legal · Jun 3, 2025 · 12 pages',snip:'...summary of <mark>enforcement actions</mark> against importers with repeated <mark>pesticide residue</mark> violations. Includes company names and corrective action timelines...',tags:[['Likely Responsive','b-g'],['b(4) — Trade Secrets','b-r']]},
+  {title:'RE: Importer Violation Review — Produce Season 2025',meta:'Email Archive · From: J. Harmon → M. Torres · Apr 22, 2025',snip:'...attached the <mark>inspection</mark> logs from San Diego port. Note elevated <mark>residue</mark> levels on Chilean grape lot — flagging for your <mark>report</mark>...',tags:[['Likely Responsive','b-o'],['b(6) Sender Info','b-gr']]},
+  {title:'APHIS Import Surveillance Quarterly Summary Q3 2024',meta:'AG Records · PPQ Import · Nov 2, 2024 · 34 pages',snip:'...statistical summary of <mark>pesticide</mark> sampling results for <mark>imported</mark> fresh commodities. Positive rates by commodity and country of origin...',tags:[['Likely Responsive','b-g']]},
+  {title:'FY2024 Annual Pesticide Data Program Summary',meta:'AG Records · AMS · Feb 14, 2025 · 88 pages',snip:'...USDA <mark>pesticide</mark> monitoring results across domestic and <mark>imported produce</mark>. Multi-year trend data for actionable <mark>residue</mark> risk assessment...',tags:[['Possibly Responsive','b-b'],['Public Dataset Available','b-gr']]},
+];
+function runSearch(){
+  const q=document.getElementById('srch-input')||{value:''};
+  const res=document.getElementById('srch-results');
+  if(!res)return;
+  res.innerHTML=`<div style="font-size:11px;color:var(--t2);margin-bottom:10px"><b>${SEARCH_RESULTS.length} results</b> across 3 sources — sorted by relevance</div>`+
+  SEARCH_RESULTS.map(r=>`<div class="rc" onclick="toast('Opening document preview...','ok')"><div class="rc-ttl">${r.title}</div><div class="rc-m">${r.meta}</div><div class="rc-s">${r.snip}</div><div style="display:flex;gap:6px;margin-top:7px">${r.tags.map(t=>`<span class="b ${t[1]}">${t[0]}</span>`).join('')}</div></div>`).join('');
+}
+function addTag(t){const inp=document.getElementById('srch-input');if(inp)inp.value+=' '+t;runSearch();}
+
+// ═══════════════════════════ DATASETS ═══════════════════════════
+function renderDatasets(q){
+  const el=document.getElementById('ds-list');if(!el)return;
+  const agency=(document.getElementById('ds-agency')||{value:''}).value;
+  const rel=(document.getElementById('ds-rel')||{value:''}).value;
+  const fmt2=(document.getElementById('ds-fmt')||{value:''}).value;
+  const srch=(document.getElementById('ds-search')||{value:q||''}).value.toLowerCase();
+  const relCls={'CRITICAL':'b-r','HIGH':'b-o','MEDIUM':'b-b','MEDIUM-HIGH':'b-o'};
+  const filtered=D.datasets.filter(d=>
+    (!agency||d.agency===agency)&&
+    (!rel||d.relevance.startsWith(rel))&&
+    (!fmt2||d.format.includes(fmt2))&&
+    (!srch||d.name.toLowerCase().includes(srch)||d.desc.toLowerCase().includes(srch)||d.agency.toLowerCase().includes(srch))
+  );
+  document.getElementById('ds-count').textContent=`Showing ${filtered.length} datasets`;
+  el.innerHTML=filtered.map(d=>`
+    <div class="ds-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:3px">
+        <div class="ds-ttl">${d.name}</div>
+        <span class="b ${relCls[d.relevance]||'b-gr'}" style="margin-left:8px;flex-shrink:0">${d.relevance}</span>
+      </div>
+      <div class="ds-m">${d.agency} · ${d.area} · ${d.format} · Updated: ${d.updated} ${d.api?'· <span style="color:var(--green)">API Available</span>':''}</div>
+      <div class="ds-desc">${d.desc}</div>
+      <a href="${d.url}" target="_blank" style="font-size:10px;color:var(--blue)">Open Dataset →</a>
+    </div>`).join('');
+}
+function filterDatasets(q){renderDatasets(q);}
+function clearDsFilter(){['ds-agency','ds-rel','ds-fmt'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});renderDatasets();}
+
+// ═══════════════════════════ ANALYTICS ═══════════════════════════
+function renderAnalytics(){
+  const d24=D.annual[2],d23=D.annual[1],d22=D.annual[0];
+  document.getElementById('an-kpi').innerHTML=`
+    <div class="kc"><div class="kl">Received FY2024</div><div class="kvr"><span class="kv">${fmt(d24.received)}</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">+49% vs FY2022</div></div>
+    <div class="kc"><div class="kl">Close Rate FY2024</div><div class="kvr"><span class="kv">85.4%</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">Target ≥95%</div></div>
+    <div class="kc"><div class="kl">End-FY Backlog</div><div class="kvr"><span class="kv">${fmt(d24.backlog)}</span><span class="kbadge kb-b"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div><div class="ks">Target &lt;500</div></div>
+    <div class="kc"><div class="kl">USDA Simple Median</div><div class="kvr"><span class="kv">17.4d</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">HHS benchmark: 10d</div></div>
+    <div class="kc"><div class="kl">Govt-wide FY2024</div><div class="kvr"><span class="kv">1.5M</span><span class="kbadge kb-w"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/></svg></span></div><div class="ks">+25% vs FY2023</div></div>`;
+  drawBacklogChart();drawBenchChart();drawCompVolumeTable();
+}
+function drawBacklogChart(){
+  const el=document.getElementById('backlog-chart');if(!el)return;
+  const pts=[{fy:'FY2022',v:733},{fy:'FY2023',v:700},{fy:'FY2024',v:2270},{fy:'FY2025 est',v:1800},{fy:'FY2026 YTD',v:1133}];
+  const W=270,H=150,ox=40,oy=10,maxV=2500,target=500;
+  const x=i=>ox+i*(W/4);const y=v=>oy+H-(v/maxV*H);
+  let html=`<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy+H}" stroke="#e5e7eb"/>`;
+  [0,500,1000,1500,2000,2500].forEach(v=>{const yy=y(v);html+=`<line x1="${ox}" y1="${yy}" x2="${ox+W}" y2="${yy}" stroke="#f3f4f6"/>`;html+=`<text x="${ox-4}" y="${yy+4}" text-anchor="end" font-size="8.5" fill="#9ca3af">${v}</text>`;});
+  const linePts=pts.map((p,i)=>`${x(i)},${y(p.v)}`).join(' ');
+  html+=`<polyline points="${linePts.split(' ').slice(0,3).join(' ')}" fill="none" stroke="#3aab7b" stroke-width="2.5"/>`;
+  html+=`<polyline points="${linePts.split(' ').slice(2).join(' ')}" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="5,3"/>`;
+  const ty=y(target);html+=`<line x1="${ox}" y1="${ty}" x2="${ox+W+20}" y2="${ty}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3"/>`;
+  html+=`<text x="${ox+W+22}" y="${ty+4}" font-size="8.5" fill="#6366f1">Target</text>`;
+  pts.forEach((p,i)=>{html+=`<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="${i<3?'#3aab7b':'#93c5fd'}"/>`;html+=`<text x="${x(i)}" y="${oy+H+14}" text-anchor="middle" font-size="8" fill="#9ca3af">${p.fy}</text>`;html+=`<text x="${x(i)}" y="${y(p.v)-7}" text-anchor="middle" font-size="9" fill="${i<3?'#374151':'#6b7280'}">${fmt(p.v)}</text>`;});
+  html+=`<text x="${ox+4}" y="${oy+14}" font-size="9" fill="#3aab7b">● Actual</text><text x="${ox+60}" y="${oy+14}" font-size="9" fill="#93c5fd">● Estimated</text>`;
+  el.innerHTML=html;
+}
+function drawBenchChart(){
+  const el=document.getElementById('bench-chart');if(!el)return;
+  const data=[{a:'HHS',v:10.0,ok:true},{a:'DOT',v:12.5,ok:true},{a:'DOD',v:15.2,ok:false},{a:'USDA',v:17.4,ok:false},{a:'Target',v:10.0,ok:true,target:true}];
+  const maxV=20;
+  el.innerHTML=data.map(d=>`
+    <div class="sbar-row">
+      <div class="sbar-lbl" style="${d.a==='USDA'?'font-weight:700;color:var(--navy)':''}">${d.a}</div>
+      <div class="sbar-track">
+        <div class="sbar-fill ${d.ok?'ok':'bad'}" style="width:${Math.round(d.v/maxV*100)}%${d.target?';background:#c7d2fe':''}">
+          <span class="sbar-val">${d.v}d</span>
+        </div>
+      </div>
+    </div>`).join('')+`<div style="margin-top:10px;font-size:10px;color:var(--t2)">Source: Agency FY2024 Annual FOIA Reports · DOT/DOD simple median not published separately</div>`;
+}
+function drawCompVolumeTable(){
+  const el=document.getElementById('comp-volume-table');if(!el)return;
+  el.innerHTML=`<table><thead><tr><th>Component</th><th>Full Name</th><th>Mission Area</th><th>Requests FY2024</th><th>% of Total</th></tr></thead><tbody>`+
+  D.components.map(c=>`<tr><td><b>${c.name}</b></td><td>${c.full}</td><td>${c.area}</td><td><b>${fmt(c.received)}</b></td><td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#f3f4f6;border-radius:3px;height:10px;overflow:hidden"><div style="height:10px;background:#3aab7b;width:${c.pct}%;border-radius:3px"></div></div><span style="font-size:10px;font-weight:600;width:36px">${c.pct}%</span></div></td></tr>`).join('')+`</tbody></table>`;
+}
+
+// ═══════════════════════════ AI HUB ═══════════════════════════
+function renderAI(){
+  document.getElementById('ai-kpi').innerHTML=`
+    <div class="kc"><div class="kl">Auto-Routed</div><div class="kvr"><span class="kv">94%</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">Officer acceptance rate</div></div>
+    <div class="kc"><div class="kl">Duplicates Detected</div><div class="kvr"><span class="kv">312</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">FY26 YTD</div></div>
+    <div class="kc"><div class="kl">PII Flags Issued</div><div class="kvr"><span class="kv">8,441</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">AI first pass</div></div>
+    <div class="kc"><div class="kl">Redaction Time Saved</div><div class="kvr"><span class="kv">41%</span><span class="kbadge kb-ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="ks">vs. manual baseline</div></div>`;
+  document.getElementById('ai-queue').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid #fcd34d;border-radius:6px;background:#fef9c3;cursor:pointer" onclick="toast('Opening PII review queue...','ok')"><div><div style="font-size:11px;font-weight:600;color:#92400e">PII Flags — High Confidence</div><div style="font-size:10px;color:#b45309;margin-top:2px">4 documents · SSNs, personal emails</div></div><span class="b b-o">47 items</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid #fca5a5;border-radius:6px;background:#fee2e2;cursor:pointer" onclick="toast('Opening exemption review...','ok')"><div><div style="font-size:11px;font-weight:600;color:#991b1b">b(4) Suggestions</div><div style="font-size:10px;color:#b91c1c;margin-top:2px">Trade secret passages in 2 cases</div></div><span class="b b-r">23 items</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff;cursor:pointer" onclick="toast('Opening duplicate matches...','ok')"><div><div style="font-size:11px;font-weight:600;color:#1d4ed8">Duplicate Matches</div><div style="font-size:10px;color:#2563eb;margin-top:2px">3 requests similar to open cases</div></div><span class="b b-b">3 items</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;cursor:pointer" onclick="toast('Opening query suggestions...','ok')"><div><div style="font-size:11px;font-weight:600">Query Optimization</div><div style="font-size:10px;color:var(--t2);margin-top:2px">8 searches flagged as over-broad</div></div><span class="b b-gr">8 items</span></div>
+    </div>`;
+  document.getElementById('routing-bars').innerHTML=
+    [['FSA',96],['APHIS',94],['FNS',91],['NRCS',88],['AMS',85]].map(([a,v])=>`
+      <div class="sbar-row"><div class="sbar-lbl">${a}</div>
+      <div class="sbar-track"><div class="sbar-fill ok" style="width:${v}%"><span class="sbar-val">${v}%</span></div></div></div>`).join('');
+}
+
+// ═══════════════════════════ ADMIN ═══════════════════════════
+function renderAdmin(){
+  document.getElementById('integrations').innerHTML=D.integrations.map(i=>{
+    const cls=i.status==='ok'?'b-g':i.status==='warn'?'b-o':'b-gr';
+    const dot=i.status==='ok'?'●':i.status==='warn'?'⚠':'○';
+    const bg=i.status==='warn'?'background:#fef9c3;border-color:#fcd34d':'';
+    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 9px;border:1px solid var(--bd);border-radius:5px;margin-bottom:6px;${bg};cursor:pointer" onclick="toast('${i.name} settings','ok')"><span style="font-size:11px;font-weight:500">${i.name}</span><span class="b ${cls}">${dot} ${i.label}</span></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════ MODALS ═══════════════════════════
+function openModal(name){
+  document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('on'));
+  const m=document.getElementById('modal-'+name);if(m)m.classList.add('on');
+  if(name==='intake'){wizReset();}
+}
+function closeModal(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('on'));}
+function stopClock(){closeModal();toast('Clock stopped — reason logged. Case paused.','ok');const b=document.querySelector('.clk');if(b){b.style.background='#fee2e2';b.style.borderColor='#fca5a5';document.querySelector('.clk-t').style.color='#b91c1c';document.getElementById('case-days-left').textContent='CLOCK STOPPED';}}
+function doTransfer(){closeModal();toast('Case transferred successfully','ok');nav('work');}
+
+// ═══════════════════════════ INTAKE WIZARD ═══════════════════════════
+let wizCurrent=1;
+function wizReset(){wizCurrent=1;[1,2,3].forEach(i=>{const s=document.getElementById('wiz-'+i);if(s){s.classList.remove('on');}const dot=document.getElementById('wd-'+i);if(dot){dot.className='wiz-dot'+(i===1?' on':'');}const line=document.getElementById('wl-'+i);if(line)line.className='wiz-line';});const s=document.getElementById('wiz-1');if(s)s.classList.add('on');document.getElementById('ai-loading').style.display='block';document.getElementById('ai-result').style.display='none';const f=document.getElementById('wiz3-footer');if(f)f.style.display='none';}
+function wizNext(step){
+  document.getElementById('wiz-'+wizCurrent).classList.remove('on');
+  document.getElementById('wd-'+wizCurrent).className='wiz-dot done';
+  document.getElementById('wd-'+wizCurrent).textContent='✓';
+  if(wizCurrent<3){const l=document.getElementById('wl-'+wizCurrent);if(l)l.className='wiz-line done';}
+  wizCurrent=step;
+  document.getElementById('wiz-'+wizCurrent).classList.add('on');
+  document.getElementById('wd-'+wizCurrent).className='wiz-dot on';
+  if(step===3)runAIScoring();
+}
+function wizBack(step){
+  document.getElementById('wiz-'+wizCurrent).classList.remove('on');
+  document.getElementById('wd-'+wizCurrent).className='wiz-dot';
+  wizCurrent=step;
+  document.getElementById('wiz-'+wizCurrent).classList.add('on');
+  document.getElementById('wd-'+wizCurrent).className='wiz-dot on';
+}
+function runAIScoring(){
+  const prog=document.getElementById('ai-progress');let pct=0;
+  const iv=setInterval(()=>{pct+=Math.random()*15;if(pct>=100){pct=100;clearInterval(iv);showAIResult();}prog.style.width=pct+'%';},180);
+}
+function showAIResult(){
+  document.getElementById('ai-loading').style.display='none';
+  document.getElementById('ai-result').style.display='block';
+  document.getElementById('wiz3-footer').style.display='flex';
+  const desc=(document.getElementById('in-desc')||{value:''}).value.toLowerCase();
+  const score=desc.includes('all')||desc.includes('any')||desc.includes('report')?Math.floor(70+Math.random()*20):Math.floor(30+Math.random()*40);
+  const comp=(document.getElementById('in-comp')||{value:'FSA'}).value;
+  document.getElementById('new-score').textContent=score;
+  document.getElementById('new-score-bar').style.width=score+'%';
+  document.getElementById('new-track').textContent=score>=65?'HIGH — Complex Track':'STANDARD — Simple Track';
+  document.getElementById('new-routing').textContent=comp+' — FOIA Office';
+  document.getElementById('new-conf').textContent='Confidence: '+(80+Math.floor(Math.random()*15))+'%';
+  document.getElementById('new-dup').textContent='No duplicates found';
+}
+function createCase(){
+  closeModal();
+  const name=(document.getElementById('in-name')||{value:'New Requester'}).value||'New Requester';
+  const comp=(document.getElementById('in-comp')||{value:'FSA'}).value;
+  const newCase={id:comp+'-2026-'+String(Math.floor(Math.random()*9000+1000)),req:name,comp,desc:'New intake request',recv:'Apr 17',due:'May 15',days:18,track:'Simple',status:'In Review',score:45,officer:'Unassigned'};
+  CASES.unshift(newCase);
+  toast(`Case ${newCase.id} created and assigned for review`,'ok');
+  nav('work');
+}
+
+// ═══════════════════════════ INIT ═══════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  renderDash();
+  renderWork();
+  runSearch();
+  renderDatasets();
+  renderAnalytics();
+  renderAI();
+  renderAdmin();
+});
 </script>
 </body>
 </html>
