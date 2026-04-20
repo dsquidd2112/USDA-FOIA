@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOIAXpress vs. C3 AI FOIA Management</title>
+  <style>
+    /* ── Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #F4F6F9;
+      color: #1A1E2E;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── Page header ──────────────────────────────────────── */
+    .page-header {
+      max-width: 960px;
+      margin: 0 auto 32px;
+    }
+    .page-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #1A1E2E;
+      margin-bottom: 6px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: #5A6074;
+      line-height: 1.5;
+    }
+
+    /* ── Scorecard banner ─────────────────────────────────── */
+    .scorecard {
+      max-width: 960px;
+      margin: 0 auto 28px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+    .score-side {
+      padding: 22px 28px;
+      text-align: center;
+    }
+    .score-side.fx { background: #FFF8F8; }
+    .score-side.c3 { background: #F0FDF6; }
+    .score-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 6px;
+    }
+    .score-name {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .score-name.fx { color: #C0392B; }
+    .score-name.c3 { color: #0F7A5A; }
+    .score-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .score-pill {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 11px;
+      border-radius: 20px;
+    }
+    .score-pill.green  { background: #D4EDDA; color: #1A6B36; }
+    .score-pill.yellow { background: #FFF3CD; color: #856404; }
+    .score-pill.red    { background: #FDDEDE; color: #8B1A1A; }
+    .score-pill.ai     { background: #EAE8FD; color: #3B31A8; }
+    .score-vs {
+      padding: 16px 22px;
+      font-size: 22px;
+      font-weight: 800;
+      color: #CDD0DA;
+      text-align: center;
+    }
+
+    /* ── Legend ───────────────────────────────────────────── */
+    .legend-bar {
+      max-width: 960px;
+      margin: 0 auto 20px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #5A6074;
+    }
+    .legend-bar span { display: flex; align-items: center; gap: 6px; }
+    .leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+    /* ── Table wrapper ────────────────────────────────────── */
+    .table-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+
+    /* ── Table ────────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    colgroup .col-feat { width: 25%; }
+    colgroup .col-fx   { width: 37.5%; }
+    colgroup .col-c3   { width: 37.5%; }
+
+    /* head */
+    thead th {
+      padding: 14px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #5A6074;
+      background: #F8F9FC;
+      border-bottom: 2px solid #E4E7EF;
+      vertical-align: bottom;
+    }
+    thead th.col-c3-head {
+      background: #EAF8F2;
+      border-bottom: 2px solid #2DC98A;
+      color: #0F7A5A;
+    }
+    .col-c3-head .head-star {
+      font-size: 10px;
+      background: #2DC98A;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* section headers */
+    .section-row td {
+      background: #1A1E2E;
+      color: #CDD5E0;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 9px 18px;
+    }
+
+    /* body rows */
+    tbody tr { border-bottom: 1px solid #EEF0F5; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td {
+      padding: 14px 18px;
+      vertical-align: top;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    /* "C3 wins" rows get a very subtle green tint */
+    .win-row td.c3-cell { background: #F5FFF9; }
+
+    /* feature column */
+    td.feat-cell { background: #FAFBFD; border-right: 1px solid #EEF0F5; }
+    .feat-name {
+      font-weight: 600;
+      font-size: 13.5px;
+      color: #1A1E2E;
+      line-height: 1.3;
+    }
+    .feat-sub {
+      font-size: 11.5px;
+      color: #8A90A4;
+      margin-top: 3px;
+    }
+
+    /* vendor cells */
+    td.fx-cell  { border-right: 1px solid #EEF0F5; }
+    td.c3-cell  { border-left: 3px solid #2DC98A; }
+
+    .cell-badge { margin-bottom: 7px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .cell-desc {
+      font-size: 12.5px;
+      color: #4A5068;
+      line-height: 1.55;
+    }
+
+    /* advantage callout inside C3 cell */
+    .advantage {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #0F7A5A;
+      background: #D4F5E6;
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-top: 7px;
+    }
+    .advantage::before { content: "✦"; font-size: 9px; }
+
+    /* ── Badges ───────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 5px;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+    .badge-yes     { background: #D4EDDA; color: #1A6B36; }
+    .badge-partial { background: #FFF3CD; color: #856404; }
+    .badge-no      { background: #FDDEDE; color: #8B1A1A; }
+    .badge-ai      { background: #EAE8FD; color: #3B31A8; }
+
+    /* ── Footer note ──────────────────────────────────────── */
+    .footer-note {
+      max-width: 960px;
+      margin: 20px auto 0;
+      font-size: 12px;
+      color: #8A90A4;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h1>FOIAXpress vs. C3 AI FOIA Management</h1>
+    <p>Side-by-side capability comparison across case management, AI automation, document handling, reporting, and infrastructure.</p>
+  </div>
+
+  <!-- Scorecard banner -->
+  <div class="scorecard">
+    <div class="score-side fx">
+      <div class="score-label">Legacy System</div>
+      <div class="score-name fx">FOIAXpress (Casepoint)</div>
+      <div class="score-pills">
+        <span class="score-pill green">9 Supported</span>
+        <span class="score-pill yellow">6 Partial</span>
+        <span class="score-pill red">7 Not supported</span>
+      </div>
+    </div>
+    <div class="score-vs">VS</div>
+    <div class="score-side c3">
+      <div class="score-label">Modern AI Platform</div>
+      <div class="score-name c3">C3 AI FOIA Management</div>
+      <div class="score-pills">
+        <span class="score-pill green">16 Supported</span>
+        <span class="score-pill ai">6 AI-native</span>
+        <span class="score-pill red">0 Not supported</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend-bar">
+    <span><span class="leg-dot" style="background:#1A6B36;"></span> Supported</span>
+    <span><span class="leg-dot" style="background:#856404;"></span> Partial / limited</span>
+    <span><span class="leg-dot" style="background:#8B1A1A;"></span> Not supported</span>
+    <span><span class="leg-dot" style="background:#3B31A8;"></span> AI-native capability</span>
+    <span><span class="leg-dot" style="background:#2DC98A;"></span> C3 AI advantage</span>
+  </div>
+
+  <!-- Main comparison table -->
+  <div class="table-wrap">
+    <table>
+      <colgroup>
+        <col class="col-feat" />
+        <col class="col-fx" />
+        <col class="col-c3" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>FOIAXpress (Casepoint)</th>
+          <th class="col-c3-head">C3 AI FOIA Management <span class="head-star">Recommended</span></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- ── Case & Request Management ── -->
+        <tr class="section-row"><td colspan="3">Case &amp; Request Management</td></tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Request intake</div>
+            <div class="feat-sub">Logging &amp; creation</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Manual form entry, drag-and-drop letter upload. No intelligence applied at intake.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span><span class="badge badge-ai">AI</span></div>
+            <div class="cell-desc">3-step intake wizard with AI routing and automatic duplicate detection at submission.</div>
+            <span class="advantage">AI routing + dedup at intake</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Case tracking &amp; status</div>
+            <div class="feat-sub">Workflow stages</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Status tracking, target dates, remaining days, multi-track type.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Visual Kanban pipeline: Intake → Routing → Search → Redaction → Review → Release — full lifecycle at a glance.</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Workload / queue management</div>
+            <div class="feat-sub">Officer assignment</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Per-officer queue with workload bar chart; group queue assignments.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Personal action queue sorted by deadline urgency; one-click escalation and reassignment.</div>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Stop-the-clock / extensions</div>
+            <div class="feat-sub">Perfection, referral</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Manual clock stop; extension tracking logged. Officer must remember to restart.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Clock stop triggers an automatic perfection notice; clock restarts automatically on requester reply — no manual steps.</div>
+            <span class="advantage">Automated notices &amp; restart</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Transfer / referral</div>
+            <div class="feat-sub">Cross-component routing</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Transfer request module; referred from/to fields.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Reassign with transfer note; every action logged immutably in the audit trail.</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Appeals tracking</div>
+            <div class="feat-sub">Administrative appeals</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Appeals tab per case; appeal count visible in workload view.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Dedicated Appeal tab with its own approval chain and independent deadline tracking.</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Fees &amp; billing tracking</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Fees/Billing module; fee category assignment per case.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Fee category captured at intake; fee-waiver cases automatically surfaced on the Dashboard.</div>
+          </td>
+        </tr>
+
+
+        <!-- ── Document & Correspondence ── -->
+        <tr class="section-row"><td colspan="3">Document &amp; Correspondence Management</td></tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Document management</div>
+            <div class="feat-sub">Storage &amp; retrieval</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-partial">Partial</span></div>
+            <div class="cell-desc">Folder-based module with wildcard search only. Noted pain point: latency forces staff to work outside the system.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span><span class="badge badge-ai">AI</span></div>
+            <div class="cell-desc">AI-discovered records across SharePoint, AG Records, email archive, and PST files — each scored by relevance.</div>
+            <span class="advantage">AI discovery across all repos</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Correspondence log</div>
+            <div class="feat-sub">Inbound / outbound</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Correspondence log per case; acknowledgment and email dispatch tracking.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Full correspondence history in the Audit Log; auto-notices triggered by each workflow action.</div>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Multi-modal data support</div>
+            <div class="feat-sub">Emails, texts, chats</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">Cannot efficiently process emails, PST files, chat logs, or texts — a key pain point cited by USDA.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span><span class="badge badge-ai">AI</span></div>
+            <div class="cell-desc">Designed to ingest emails, PST files, texts, and chat messages as part of AI-driven document discovery.</div>
+            <span class="advantage">Handles all modern data formats</span>
+          </td>
+        </tr>
+
+
+        <!-- ── AI & Automation ── -->
+        <tr class="section-row"><td colspan="3">AI &amp; Automation</td></tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">AI-assisted routing</div>
+            <div class="feat-sub">Component assignment</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">Fully manual assignment to action office and request owner — no intelligence applied.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">AI routing recommendation with confidence score; officer accepts or overrides; routing accuracy tracked per component.</div>
+            <span class="advantage">Eliminates manual routing</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Duplicate detection</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-partial">Partial</span></div>
+            <div class="cell-desc">Manual "Duplicate Check" button on the request form only — easy to overlook.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">Automatic at intake; also surfaced continuously in the AI Review Queue for ongoing monitoring.</div>
+            <span class="advantage">Continuous, automatic dedup</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">NLP / natural language search</div>
+            <div class="feat-sub">Cross-repository</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">Keyword/wildcard search within FOIAXpress only. No cross-repo querying; officer skill variability is a noted problem.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">Plain-English search across all repositories; AI optimizes the query and suggests refinements for overly broad or narrow results.</div>
+            <span class="advantage">Search in plain English, everywhere</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">AI redaction assistance</div>
+            <div class="feat-sub">PII &amp; exemption flagging</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-partial">Partial</span></div>
+            <div class="cell-desc">Basic redaction module exists but is slow; latency forces staff to work outside the system; tagging is limited.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">AI first-pass flags PII, b(4), b(6), b(7) exemptions with passage citations; inline approve/reject; bulk approve; time savings tracked per case.</div>
+            <span class="advantage">AI first pass + bulk actions</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">AI-generated case summary</div>
+            <div class="feat-sub">Draft response language</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">Officers manually draft all summaries and response letters from scratch.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">AI Summary tab generates plain-language overview, key themes, recommended exemptions, and a pre-populated draft response letter.</div>
+            <span class="advantage">Draft letters in seconds</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Complexity / track scoring</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-partial">Partial</span></div>
+            <div class="cell-desc">Officer manually selects Simple / Complex / Expedite track — entirely judgment-based.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">AI recommends Simple or Complex track at intake based on request scope and volume analysis — consistent, data-driven classification.</div>
+            <span class="advantage">Consistent, data-driven classification</span>
+          </td>
+        </tr>
+
+
+        <!-- ── Reporting & Analytics ── -->
+        <tr class="section-row"><td colspan="3">Reporting &amp; Analytics</td></tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Standard reports</div>
+            <div class="feat-sub">Logs, Vaughn index</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Action History, Detailed Report, Vaughn Index, Correspondence Log, Extension Log, Staff Processing Costs.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Volume &amp; cycle time, backlog aging, exemption usage trends, and component breakdowns — all filterable by fiscal year and date range.</div>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Real-time AI performance metrics</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">No visibility into automation performance or AI activity.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">AI Hub dashboard: routing accuracy %, duplicates detected, PII flags issued, redaction time saved — tracked per component in real time.</div>
+            <span class="advantage">Full AI transparency &amp; ROI tracking</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Predictive backlog analytics</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">No forecasting capability; surge periods are handled reactively.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-ai">AI-native</span></div>
+            <div class="cell-desc">Incoming request trend analysis predicts volume surges; component-level resource allocation recommendations issued proactively.</div>
+            <span class="advantage">Proactive surge planning</span>
+          </td>
+        </tr>
+
+
+        <!-- ── Infrastructure & Compliance ── -->
+        <tr class="section-row"><td colspan="3">Infrastructure &amp; Compliance</td></tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">FedRAMP Moderate</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Current system is FedRAMP Moderate compliant.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Designed to operate within USDA-approved FedRAMP Moderate infrastructure.</div>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">AG Records / SharePoint integration</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-partial">Partial</span></div>
+            <div class="cell-desc">Records scattered across SharePoint, shared drives, and desktops — not fully integrated into the workflow.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Integrations panel connects AG Records, SharePoint, email archive, ePortal, and FOIA.gov in a single unified interface.</div>
+            <span class="advantage">One pane of glass for all sources</span>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">Immutable audit trail</div>
+            <div class="feat-sub">Compliance record</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-partial">Partial</span></div>
+            <div class="cell-desc">Action history and logs exist per case, but completeness is limited by off-system work.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Immutable, timestamped Audit Log captures all actions — including AI agent events — and cannot be edited or deleted.</div>
+            <span class="advantage">Complete, tamper-proof record</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="feat-cell">
+            <div class="feat-name">Role-based access control</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">User assignment and action office permissions.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">FOIA Officer, Supervisor, Read-Only, and System Admin roles with tiered, granular permissions.</div>
+          </td>
+        </tr>
+
+        <tr class="win-row">
+          <td class="feat-cell">
+            <div class="feat-name">High-volume / scale</div>
+          </td>
+          <td class="fx-cell">
+            <div class="cell-badge"><span class="badge badge-no">Not supported</span></div>
+            <div class="cell-desc">Not built for current scale; latency and timeouts reported; ~24K requests/yr exceeds system capacity.</div>
+          </td>
+          <td class="c3-cell">
+            <div class="cell-badge"><span class="badge badge-yes">Supported</span></div>
+            <div class="cell-desc">Built as an enterprise-grade platform designed specifically for USDA's 24,722+ annual request volume — and built to grow.</div>
+            <span class="advantage">Enterprise-grade at USDA scale</span>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer-note">
+    C3 AI FOIA Management delivers 16 supported capabilities and 6 AI-native features with zero gaps — versus 9 supported, 6 partial, and 7 unsupported for FOIAXpress.
+  </div>
+
+</body>
+</html>
